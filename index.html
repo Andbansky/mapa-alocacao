@@ -387,7 +387,8 @@ function fmtIn(v,d){ return v ? v.toLocaleString("pt-BR",{maximumFractionDigits:
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 function uid(){ return Math.random().toString(36).slice(2,10); }
 function meses1(v){ return v.toLocaleString("pt-BR",{maximumFractionDigits:1}); }
-function moneyMask(el){ el.addEventListener("input",function(){ var x=n(el.value); el.value = x? Math.round(x).toLocaleString("pt-BR") : ""; }); }
+/* campos de dinheiro inteiro: lê só os dígitos, então "1.0000" vira 10.000 e não 1 */
+function moneyMask(el){ el.addEventListener("input",function(){ var d=String(el.value).replace(/\D/g,"").replace(/^0+/,"").slice(0,13); el.value = d? (+d).toLocaleString("pt-BR") : ""; }); }
 
 /* ================= CÁLCULO ================= */
 function usd(){ return n(S.mercado.usd); }
