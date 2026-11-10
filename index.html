@@ -170,8 +170,8 @@ footer{color:var(--mut);font-size:12px;text-align:center;padding:10px 16px 40px}
 
   <div class="wz" data-s="2">
     <div class="card">
-      <h2>3. O que você já tem investido?</h2>
-      <p class="lead">Adicione cada investimento. Se ainda não tem nenhum, pode pular.</p>
+      <h2>3. Você já tem algum investimento?</h2>
+      <p class="lead">Sem problema se ainda não tiver: muita gente começa do zero. A poupança e a reserva de emergência você já informou no passo 1.</p>
       <div id="wLista"></div>
       <div id="wForm"></div>
     </div>
@@ -527,8 +527,16 @@ function listaHTML(){
   }).join("");
 }
 function renderWzLista(){
-  var box=$("#wLista"); if(!box) return; box.innerHTML = S.ativos.length? listaHTML() : "";
-  if (!$("#wForm").innerHTML) $("#wForm").innerHTML = '<button class="btn ghost full" id="wAdd" style="margin-top:10px">+ Adicionar investimento</button>';
+  var box=$("#wLista"); if(!box) return;
+  if (S.ativos.length){
+    box.innerHTML = listaHTML();
+    if (!$("#wForm").innerHTML) $("#wForm").innerHTML = '<button class="btn ghost full" id="wAdd" style="margin-top:10px">+ Adicionar outro investimento</button>';
+  } else {
+    box.innerHTML = "";
+    if (!$("#wForm").innerHTML) $("#wForm").innerHTML =
+      '<button class="choice" id="wNada"><b>Ainda não tenho nenhum investimento</b><span>Estou começando. O app vai me mostrar o caminho do zero.</span></button>'+
+      '<button class="choice" id="wAdd"><b>Sim, já tenho investimentos</b><span>Vou cadastrar o que tenho: Tesouro, CDB, ações, fundos…</span></button>';
+  }
 }
 $("#wizard").addEventListener("click", function(e){
   if (e.target.closest("[data-wz-next]")){
@@ -539,7 +547,8 @@ $("#wizard").addEventListener("click", function(e){
   }
   if (e.target.closest("[data-wz-back]")){ wz--; wzPaint(); return; }
   var p=e.target.closest("[data-prazo]"); if(p){ escolherPrazo(p.dataset.prazo); $("#wPrazos").innerHTML=prazosHTML(); return; }
-  if (e.target.id==="wAdd"){ ligarForm($("#wForm"), null, function(){ $("#wForm").innerHTML=""; renderWzLista(); }); return; }
+  if (e.target.closest("#wNada")){ S.iniciante=true; save(); wz=3; wzPaint(); return; }
+  if (e.target.closest("#wAdd")){ ligarForm($("#wForm"), null, function(){ $("#wForm").innerHTML=""; renderWzLista(); }); return; }
   var it=e.target.closest(".inv"); if (it && !$("#wForm .sheet")){ var a=S.ativos.filter(function(x){return x.id===it.dataset.id;})[0]; ligarForm($("#wForm"), a, function(){ $("#wForm").innerHTML=""; renderWzLista(); }); }
 });
 $("#wzFim").addEventListener("click", function(){
@@ -556,20 +565,27 @@ function abrirWizard(){
 /* ================= APP: RENDER ================= */
 function renderPainel(){
   var d=analise(), st=status(d), passos=[];
+  if (!d.T) st={cor:"var(--info)", ic:"★", t:"Você está começando", s:"Ótimo momento para aprender sem pressa. Siga a ordem abaixo: ela evita os erros mais comuns de quem está começando."};
   $("#hTotal").textContent=brl(d.T);
   $("#pStatus").innerHTML='<div class="light" style="background:'+st.cor+'">'+st.ic+'</div><div><h2>'+st.t+'</h2><p class="mut" style="margin-top:4px">'+st.s+'</p></div>';
 
   if (d.semPreco.length) passos.push(["Falta o preço de "+d.semPreco.map(function(a){return esc(a.nome);}).join(", "), "Sem o preço, o total fica errado. Toque em Atualizar preços na aba Investimentos ou digite o preço."]);
   if (d.mesesRes!=null && d.faltaRes>0) passos.push(["Complete sua reserva de emergência: faltam "+brl(d.faltaRes), "Hoje ela cobre "+meses1(d.mesesRes)+" de "+n(S.reserva.meta)+" meses do seu custo de vida. Até completar, coloque o dinheiro novo em algo seguro que dá para sacar no mesmo dia."]);
   var p=plano();
-  if (p.caixa>0 && p.itens.length){
+  if (p.caixa>0 && p.itens.length && d.T>0){
     var top=p.itens.slice(0,2).map(function(it){return C[it.k].nome+" (~"+brl(it.mensal)+"/mês)";}).join(" e ");
     passos.push([(p.reserva>0?"Depois da reserva, direcione os aportes para ":"Nos próximos aportes, priorize ")+top, "São as partes da carteira que estão mais abaixo da sua meta. Detalhes na aba Aportar."]);
   }
   if (d.maior && d.maiorPct>n(S.limites.ativo)) passos.push(["Evite comprar mais "+esc(d.maior.a.nome)+" por enquanto", "Ele já é "+pct(d.maiorPct)+" de tudo que você tem. Seu limite é "+pct(n(S.limites.ativo))+" por ativo, para não depender de uma empresa só."]);
   d.poucos.forEach(function(k){ passos.push(["Diversifique em "+C[k].nome, "Hoje é um ativo só nessa categoria. Com mais de um, um problema isolado pesa menos."]); });
   if (!n(S.aporte.mensal)) passos.push(["Defina quanto vai investir por mês","Vá na aba Aportar. Mesmo um valor pequeno, todo mês, faz diferença."]);
-  if (!S.ativos.length) passos.push(["Cadastre seus investimentos","Na aba Investimentos. Assim o app consegue comparar com a sua meta."]);
+  if (!S.ativos.length){
+    if (d.mesesRes==null || d.faltaRes>0) {} /* passo da reserva já entrou acima */
+    passos.push(["Antes de investir: tem dívida com juros altos?","Cartão de crédito rotativo e cheque especial cobram muito mais do que qualquer investimento rende. Se tiver, quitar primeiro é o melhor 'investimento'."]);
+    passos.push(["Aprenda o básico (10 minutos)","Em Mais → Dicionário rápido: o que é renda fixa, CDI, inflação, ações e fundos imobiliários."]);
+    passos.push(["Compare antes de escolher onde guardar","Em Mais → Comparar ofertas de renda fixa: coloque a taxa que o banco te oferece e veja se ela ganha da inflação."]);
+    passos.push(["Quando fizer o primeiro investimento, cadastre aqui","Na aba Investimentos. Daí em diante o app mostra onde colocar cada aporte novo."]);
+  }
   if (!passos.length) passos.push(["Siga aportando todo mês","Sua carteira está equilibrada. Volte aqui quando fizer um novo aporte."]);
   $("#pPassos").innerHTML = passos.map(function(x){ return '<li><b>'+x[0]+'</b><span>'+x[1]+'</span></li>'; }).join("");
 
