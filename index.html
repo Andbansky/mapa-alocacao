@@ -72,7 +72,7 @@ input:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 4
 .top .bar{display:flex;align-items:flex-end;justify-content:space-between;padding:18px 0 12px}
 .top .tot{text-align:right}.top .tot small{display:block;color:var(--mut);font-size:12px}.top .tot strong{font-size:18px}
 .top.scrolled{background:color-mix(in srgb,var(--bg) 70%,transparent);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);border-bottom:1px solid var(--sep)}
-main{padding:6px 0 calc(120px + env(safe-area-inset-bottom))}
+main.wrap{padding:6px 16px calc(130px + env(safe-area-inset-bottom))}
 .view{display:none;animation:fade .25s ease} .view.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
@@ -327,6 +327,7 @@ footer{color:var(--mut);font-size:12px;text-align:center;padding:4px 16px 0}
 <section class="view" id="v-aprender">
   <div class="seg" id="segA">
     <button data-a="licoes" class="on">Lições</button>
+    <button data-a="guardar">Onde guardar</button>
     <button data-a="nubank">No Nubank</button>
     <button data-a="lupa">Lupa</button>
     <button data-a="simular">Simular</button>
@@ -338,6 +339,16 @@ footer{color:var(--mut);font-size:12px;text-align:center;padding:4px 16px 0}
       <div id="lLista" style="margin-top:8px"></div>
     </div>
     <div id="lAberta"></div>
+  </div>
+  <div class="sub-a" id="a-guardar">
+    <div class="glass card">
+      <h2>Onde guardar a reserva</h2>
+      <p class="lead">Compara os lugares seguros, com saque na hora, usando o CDI de hoje e já descontando o imposto. Coloque a taxa que cada app te mostra: o que rende mais fica no topo.</p>
+      <label class="f" style="margin-top:0">Valor que vai guardar</label>
+      <div class="money"><span>R$</span><input id="gValor" inputmode="numeric"></div>
+      <div id="gLista" style="margin-top:6px"></div>
+    </div>
+    <div id="gOut"></div>
   </div>
   <div class="sub-a" id="a-nubank"><div id="nbGuia"></div></div>
   <div class="sub-a" id="a-lupa">
@@ -540,7 +551,7 @@ function toast(t){var el=$("#toast");el.textContent=t;el.classList.add("on");cle
 function detectar(txt){
   var t=String(txt||"").trim().toUpperCase();
   if(!t) return null;
-  if(/CAIXINHA|POUPAN|TESOURO|CDB|LCI|LCA|CRI|CRA|DEBENT|RDB|SELIC/.test(t)) return {k:"rf",por:"pelo nome"};
+  if(/CAIXINHA|POUPAN|TESOURO|CDB|LCI|LCA|CRI|CRA|DEBENT|RDB|SELIC|MERCADO PAGO|PICPAY|CONTA REMUNERADA|NUBANK|INTER/.test(t)) return {k:"rf",por:"pelo nome"};
   if(/BITCOIN|CRIPTO|BTC|ETH|PREVID|PGBL|VGBL|OURO/.test(t)) return {k:"out",por:"pelo nome"};
   if(ETFS[t]) return {k:ETFS[t],por:"é um ETF conhecido"};
   if(/^[A-Z]{4}11$/.test(t)) return {k:"fii",por:"códigos terminados em 11 costumam ser fundos imobiliários"};
@@ -620,7 +631,7 @@ function pintarFolha(){
   h+='<h2>'+(editando?"Editar investimento":"Novo investimento")+'</h2>';
   h+='<label class="f">O que você comprou?<small>Digite o código (ex.: MXRF11, ITUB4, IVVB11) ou toque numa opção.</small></label>';
   h+='<input id="fNome" value="'+esc(a.nome)+'" autocapitalize="characters" placeholder="Código ou nome">';
-  if(!editando) h+='<div class="quick" id="fQuick"><button data-q="Caixinha Nubank">Caixinha Nubank</button><button data-q="Tesouro Selic">Tesouro Selic</button><button data-q="CDB">CDB</button><button data-q="Poupança">Poupança</button></div>';
+  if(!editando) h+='<div class="quick" id="fQuick"><button data-q="Caixinha Nubank">Caixinha Nubank</button><button data-q="Mercado Pago">Mercado Pago</button><button data-q="Tesouro Selic">Tesouro Selic</button><button data-q="CDB">CDB</button><button data-q="Poupança">Poupança</button></div>';
   if(a.classe){
     h+='<div class="det"><span class="dot" style="background:'+c.cor+'"></span><div style="flex:1"><b>'+c.nome+'</b>'+(form.por?'<div class="small mut">'+esc(form.por)+'</div>':'')+'</div>'+
        '<select id="fClasse" style="width:auto;padding:8px 30px 8px 10px;font-size:14px">'+CLASSES.map(function(x){return '<option value="'+x.k+'"'+(x.k===a.classe?" selected":"")+'>'+x.nome+'</option>';}).join("")+'</select></div>';
@@ -651,7 +662,7 @@ function pintarFolha(){
 }
 $("#sheet").addEventListener("click",function(e){
   var q=e.target.closest("[data-q]");
-  if(q){form.nome=q.dataset.q;form.classe="rf";form.por="Renda fixa";if(/Caixinha/.test(q.dataset.q)&&!S.ativos.some(function(a){return a.reserva;}))form.reserva=true;pintarFolha();var s=$("#fSaldo");if(s)s.focus();return;}
+  if(q){form.nome=q.dataset.q;form.classe="rf";form.por="Renda fixa";if(/Caixinha|Mercado Pago/.test(q.dataset.q)&&!S.ativos.some(function(a){return a.reserva;}))form.reserva=true;pintarFolha();var s=$("#fSaldo");if(s)s.focus();return;}
   if(e.target.closest("#fCancel")){fecharFolha();return;}
   if(e.target.closest("#fLupa")){fecharFolha();ir("aprender");seg("lupa");$("#lupaIn").value=editando.nome;lupa();return;}
   if(e.target.closest("#fDel")){if(confirm("Remover "+editando.nome+"?")){S.ativos=S.ativos.filter(function(x){return x.id!==editando.id;});save();fecharFolha();folha.aoFim();toast("Removido");}return;}
@@ -743,7 +754,7 @@ function renderInicio(){
 
   if(d.semPreco.length)passos.push(["Falta o preço de "+d.semPreco.map(function(a){return esc(a.nome);}).join(", "),"Sem o preço o total fica errado. Toque em Atualizar preços na Carteira ou digite o preço."]);
   if(d.mesesRes!=null&&d.faltaRes>0){var gm=n(S.reserva.gasto),mt=n(S.reserva.meta);
-    passos.push(["Complete sua reserva: faltam "+brl(d.faltaRes),"Você gasta "+brl(gm)+" por mês. O ideal é ter "+mt+" meses guardados = <b>"+brl(gm*mt)+"</b>. Você tem "+brl(d.rs)+" ("+m1(d.mesesRes)+" meses). Até completar, guarde o dinheiro novo num lugar seguro com saque na hora, como a Caixinha do Nubank."]);}
+    passos.push(["Complete sua reserva: faltam "+brl(d.faltaRes),"Você gasta "+brl(gm)+" por mês. O ideal é ter "+mt+" meses guardados = <b>"+brl(gm*mt)+"</b>. Você tem "+brl(d.rs)+" ("+m1(d.mesesRes)+" meses). Até completar, guarde o dinheiro novo num lugar seguro com saque na hora (Caixinha, Mercado Pago, Tesouro Selic). Em Aprender → Onde guardar você vê qual rende mais."]);}
   var p=plano();
   if(p.caixa>0&&p.itens.length&&d.T>0){var top=p.itens.slice(0,2).map(function(it){return C[it.k].nome+" (~"+brl(it.mensal)+"/mês)";}).join(" e ");
     passos.push([(p.reserva>0?"Depois da reserva, direcione para ":"Nos próximos aportes, priorize ")+top,"São as partes mais abaixo da sua meta. Detalhes em Aportar."]);}
@@ -860,7 +871,7 @@ var atualizando=false;
 function atualizarTudo(){ if(atualizando)return Promise.resolve(); atualizando=true; $("#cStatus").textContent="Atualizando…";
   return atualizarMercado().then(function(f){var l=S.ativos.filter(function(a){return C[a.classe].cotado&&n(a.qtd)>0;}),i=0;
     function prox(){return i>=l.length?Promise.resolve():cotar(l[i++]).then(prox);}
-    return prox().then(function(){atualizando=false;save();renderTudo();renderAjustes();simular();
+    return prox().then(function(){atualizando=false;save();renderTudo();renderAjustes();simular();renderGuardar();
       var prob=S.ativos.filter(function(a){return a.erro;}).length;
       $("#cStatus").textContent="Preços de "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+(prob?" · "+prob+" com problema":"")+(f.length?" · falhou: "+f.join(", "):"");});});}
 
@@ -911,6 +922,7 @@ $("#segA").addEventListener("click",function(e){var b=e.target.closest("[data-a]
 function renderNubank(){
   var passos=[
     ["🛟","Guardar na Caixinha (reserva)",["Abra o app do Nubank.","Na tela inicial, toque em <b>Caixinhas</b> (ou no seu saldo/dinheiro guardado).","Crie uma caixinha, por exemplo \"Reserva\", e guarde o valor.","Rende cerca de 100% do CDI, você saca quando quiser e tem garantia do FGC."]],
+    ["💛","Mercado Pago (conta que rende)",["O saldo parado na conta do Mercado Pago já rende sozinho, por volta de 100% do CDI.","Às vezes há uma taxa maior só até um limite de valor (ex.: até R$ 10 mil); acima disso vale a taxa normal. Veja a taxa atual no próprio app.","Cadastre aqui como <b>Mercado Pago</b> (botão pronto no cadastro) e marque como reserva, se for o caso.","Compare com a Caixinha em <b>Aprender → Onde guardar</b>."]],
     ["🏛️","Tesouro Direto e renda fixa",["Toque em <b>Investimentos</b>.","Procure a área de <b>Tesouro Direto</b> ou <b>Renda fixa</b>.","Compare prazo, taxa e se dá para sacar antes. Use Ajustes → Comparar ofertas para ver quanto rende de verdade."]],
     ["🏢","Comprar um fundo imobiliário ou ação",["Em <b>Investimentos</b>, toque na <b>busca</b> (lupa).","Digite o código: ex.: <b>MXRF11</b> (fundo) ou <b>ITUB4</b> (ação).","Antes de comprar, abra o código aqui na <b>Lupa</b> para entender os números.","Escolha a <b>quantidade de cotas</b>, revise o valor e confirme com sua senha.","Depois, cadastre aqui em Carteira → Adicionar."]],
     ["🌎","Investir lá fora (BDRs e ETFs)",["Na mesma busca, digite um <b>ETF</b> como <b>IVVB11</b> (500 maiores dos EUA)…","…ou um <b>BDR</b>, que é a ação americana negociada aqui: termina em 34 ou 35 (ex.: <b>AAPL34</b>).","O preço varia com a bolsa de fora e com o dólar."]],
@@ -961,6 +973,43 @@ function lupa(){
 }
 $("#lupaBtn").addEventListener("click",lupa);
 $("#lupaIn").addEventListener("keydown",function(e){if(e.key==="Enter")lupa();});
+
+/* ONDE GUARDAR A RESERVA */
+var GUARDAR = [
+  {id:"caixinha", nome:"Caixinha do Nubank",   pct:100, ir:true,  gar:"FGC (até R$ 250 mil)",      obs:"Por trás é um CDB com liquidez diária. Confira a taxa na própria caixinha."},
+  {id:"mp",       nome:"Mercado Pago (conta que rende)", pct:100, ir:true, gar:"Confira no app: CDB tem FGC; se for fundo, não", obs:"Às vezes tem taxa maior só até um limite de valor (ex.: até R$ 10 mil). Acima do limite, vale a taxa normal."},
+  {id:"selic",    nome:"Tesouro Selic",         pct:100, ir:true,  gar:"Governo federal",           obs:"Sem taxa até R$ 10 mil; acima disso, custódia de 0,20% ao ano. O dinheiro cai no dia útil seguinte."},
+  {id:"cdb",      nome:"CDB de liquidez diária", pct:102, ir:true, gar:"FGC (até R$ 250 mil)",      obs:"Alguns bancos pagam 102% a 110% do CDI. Confira se o saque é no mesmo dia."},
+  {id:"poup",     nome:"Poupança",              pct:null,ir:false, gar:"FGC (até R$ 250 mil)",      obs:"Rende pela regra da poupança, bem menos que o CDI. Só rende no \"aniversário\" mensal."},
+  {id:"conta",    nome:"Conta corrente parada", pct:0,   ir:false, gar:"—",                         obs:"Não rende nada: perde para a inflação todo mês."}
+];
+function renderGuardarInputs(){
+  S.guardar=S.guardar||{};
+  $("#gLista").innerHTML=GUARDAR.filter(function(o){return o.pct!=null&&o.id!=="conta";}).map(function(o){
+    return '<div class="met" style="align-items:center"><div class="k"><b>'+o.nome+'</b><span>Taxa que o app te mostra (% do CDI)</span></div><div style="width:92px"><input data-g="'+o.id+'" inputmode="decimal" value="'+fmtIn(n(S.guardar[o.id]!=null?S.guardar[o.id]:o.pct),1)+'" style="padding:9px 10px;text-align:right"></div></div>';}).join("");
+}
+function renderGuardar(){
+  var m=S.mercado, v=n($("#gValor").value)||reservaSaldo()||10000; if(!$("#gValor").value) $("#gValor").value=fmtIn(v,0);
+  if(!m.cdi||!m.ipca){$("#gOut").innerHTML='<div class="glass card"><p class="err">Atualize o mercado no Início para usar o CDI de hoje.</p></div>';return;}
+  var irAno=17.5; /* resgate entre 1 e 2 anos: a faixa mais comum para reserva */
+  var poup = n(m.selic)>8.5 ? (Math.pow(1.005,12)-1)*100 : n(m.selic)*0.7;
+  var lista=GUARDAR.map(function(o){
+    var pct=o.pct==null?null:(S.guardar&&S.guardar[o.id]!=null?n(S.guardar[o.id]):o.pct);
+    var bruto=o.id==="poup"?poup:m.cdi*pct/100;
+    if(o.id==="selic"&&v>10000) bruto-=0.20*(v-10000)/v;
+    var liq=bruto*(1-(o.ir?irAno:0)/100);
+    return {o:o,pct:pct,bruto:bruto,liq:liq,ano:v*liq/100,mes:v*(Math.pow(1+liq/100,1/12)-1)};
+  }).sort(function(a,b){return b.liq-a.liq;});
+  var top=lista[0], real=((1+top.liq/100)/(1+m.ipca/100)-1)*100;
+  $("#gOut").innerHTML='<div class="glass card"><p class="mut">Com '+brl(v)+' guardados, por ano, já sem imposto:</p>'+lista.map(function(x,i){
+    var dif=i>0?x.ano-top.ano:0;
+    return '<div class="met"><div class="k"><b>'+(i===0?'🥇 ':'')+x.o.nome+'</b><span>'+(x.pct==null?'regra da poupança':x.pct+'% do CDI')+' · '+x.o.gar+'</span></div><div class="v '+(i===0?"up":"")+'">'+brl(x.ano)+'<div class="small mut" style="font-weight:400">'+brl(x.mes)+'/mês'+(i>0?' · '+sinal(dif,brl)+'':'')+'</div></div></div>';}).join("")+
+    '<div class="help"><b>Resumo:</b> entre as opções a 100% do CDI a diferença é pequena. O que pesa é <b>não deixar na poupança nem parado na conta</b>: '+brl(top.ano-lista.filter(function(x){return x.o.id==="poup";})[0].ano)+' a menos por ano. O melhor lugar hoje rende cerca de <b>'+pct(real,1)+' acima da inflação</b>.</div>'+
+    '<details class="box"><summary>Observações de cada opção</summary><div class="in">'+GUARDAR.map(function(o){return '<p style="margin-bottom:8px"><b>'+o.nome+'</b><br><span class="mut small">'+o.obs+'</span></p>';}).join("")+'</div></details>'+
+    '<p class="small mut" style="margin-top:8px">Contas com o CDI de hoje ('+pct(m.cdi,2)+'), imposto de '+pct(irAno,1)+' (resgate entre 1 e 2 anos) e taxa constante. As taxas dos apps mudam: confira antes de aplicar. Para a reserva, o critério é segurança e saque na hora; o rendimento vem depois.</p></div>';
+}
+$("#gLista").addEventListener("input",function(e){var k=e.target.dataset.g;if(!k)return;S.guardar=S.guardar||{};S.guardar[k]=n(e.target.value);save();renderGuardar();});
+moneyMask($("#gValor")); $("#gValor").addEventListener("input",renderGuardar);
 
 /* SIMULADOR */
 function simular(){
@@ -1013,7 +1062,7 @@ $("#zerar").addEventListener("click",function(){if(!confirm("Apagar todos os dad
 
 function abrirApp(){$("#wizard").style.display="none";$("#app").style.display="block";
   $("#aMensal").value=fmtIn(n(S.aporte.mensal),0);$("#aMeses").value=String([1,3,6,12].indexOf(n(S.aporte.meses))>=0?n(S.aporte.meses):6);
-  renderTudo();renderAjustes();renderLicoes();renderNubank();var aba="inicio";try{aba=localStorage.getItem(KEY+"-aba")||"inicio";}catch(e){}ir(TIT[aba]?aba:"inicio");}
+  renderTudo();renderAjustes();renderLicoes();renderNubank();renderGuardarInputs();renderGuardar();var aba="inicio";try{aba=localStorage.getItem(KEY+"-aba")||"inicio";}catch(e){}ir(TIT[aba]?aba:"inicio");}
 
 /* ================= INÍCIO ================= */
 if("serviceWorker" in navigator&&location.protocol!=="file:")navigator.serviceWorker.register("sw.js").catch(function(){});
