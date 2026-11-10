@@ -638,7 +638,13 @@ function renderPainel(){
   $("#pStatus").innerHTML='<div class="light" style="background:'+st.cor+'">'+st.ic+'</div><div><h2>'+st.t+'</h2><p class="mut" style="margin-top:4px">'+st.s+'</p></div>';
 
   if (d.semPreco.length) passos.push(["Falta o preço de "+d.semPreco.map(function(a){return esc(a.nome);}).join(", "), "Sem o preço, o total fica errado. Toque em Atualizar preços na aba Investimentos ou digite o preço."]);
-  if (d.mesesRes!=null && d.faltaRes>0) passos.push(["Complete sua reserva de emergência: faltam "+brl(d.faltaRes), "Hoje ela cobre "+meses1(d.mesesRes)+" de "+n(S.reserva.meta)+" meses do seu custo de vida. Até completar, coloque o dinheiro novo em algo seguro que dá para sacar no mesmo dia."]);
+  if (d.mesesRes!=null && d.faltaRes>0){
+    var gm=n(S.reserva.gasto), mt=n(S.reserva.meta);
+    passos.push(["Complete sua reserva de emergência: faltam "+brl(d.faltaRes),
+      "É o dinheiro para imprevistos (perder o emprego, doença, conserto). A conta: você gasta "+brl(gm)+" por mês, e o ideal é ter "+mt+" meses guardados = <b>"+brl(gm*mt)+"</b>. "+
+      "Você tem "+brl(n(S.reserva.saldo))+", que pagam "+meses1(d.mesesRes)+" meses. Faltam <b>"+brl(d.faltaRes)+"</b>.<br>"+
+      "Até completar, coloque o dinheiro novo em algo seguro e com saque no mesmo dia (ex.: Tesouro Selic, CDB com liquidez diária)."]);
+  }
   var p=plano();
   if (p.caixa>0 && p.itens.length && d.T>0){
     var top=p.itens.slice(0,2).map(function(it){return C[it.k].nome+" (~"+brl(it.mensal)+"/mês)";}).join(" e ");
