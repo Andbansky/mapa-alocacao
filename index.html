@@ -60,7 +60,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 .top b{font-size:15px}
 .top .tot{text-align:right;font-size:13px;color:var(--mut)} .top .tot strong{display:block;font-size:19px;color:var(--txt)}
 nav{display:flex;gap:4px;padding-bottom:10px;overflow-x:auto}
-nav button{flex:1;background:none;border:0;color:var(--mut);padding:9px 10px;border-radius:10px;font:inherit;font-size:15px;cursor:pointer;white-space:nowrap}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:9px 6px;border-radius:10px;font:inherit;font-size:15px;cursor:pointer;white-space:nowrap}
 nav button.on{background:var(--panel2);color:var(--txt);font-weight:700}
 main{padding:18px 0 70px}
 .view{display:none} .view.on{display:block}
@@ -136,6 +136,26 @@ th{text-align:left;color:var(--mut);font-weight:500;font-size:12px;padding:6px 4
 td{padding:7px 4px;border-bottom:1px solid var(--line)}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 footer{color:var(--mut);font-size:12px;text-align:center;padding:10px 16px 40px}
+
+/* aprender */
+.seg{display:flex;background:var(--panel2);border-radius:12px;padding:4px;margin-bottom:14px}
+.seg button{flex:1;background:none;border:0;color:var(--mut);padding:10px;border-radius:9px;font:inherit;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--panel);color:var(--txt);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sub-a{display:none} .sub-a.on{display:block}
+.lic{display:flex;gap:12px;align-items:center;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:12px 0;color:var(--txt);font:inherit;text-align:left;cursor:pointer}
+.lic:first-child{border-top:0}
+.lic .ck{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--panel2);color:var(--mut)}
+.lic.feita .ck{background:var(--ok);color:#06140c}
+.lic b{display:block} .lic span{font-size:13px;color:var(--mut)}
+.texto p{margin:0 0 12px} .texto ul{margin:0 0 12px;padding-left:20px} .texto li{margin-bottom:6px}
+.texto h3{margin:16px 0 8px}
+.quiz button{display:block;width:100%;text-align:left;background:var(--panel2);border:2px solid transparent;border-radius:12px;padding:12px 14px;margin-top:8px;color:var(--txt);font:inherit;cursor:pointer}
+.quiz button.certa{border-color:var(--ok)} .quiz button.errada{border-color:var(--bad)}
+.met{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.met:first-child{border-top:0}
+.met .k{flex:1} .met .k b{display:block} .met .k span{font-size:13px;color:var(--mut)}
+.met .v{text-align:right;font-weight:700;max-width:42%}
+.up{color:var(--ok)} .down{color:var(--bad)}
 </style>
 </head>
 <body>
@@ -198,8 +218,9 @@ footer{color:var(--mut);font-size:12px;text-align:center;padding:10px 16px 40px}
     </div>
     <nav id="nav">
       <button data-v="painel" class="on">Painel</button>
-      <button data-v="invest">Investimentos</button>
+      <button data-v="invest">Carteira</button>
       <button data-v="aportar">Aportar</button>
+      <button data-v="aprender">Aprender</button>
       <button data-v="mais">Mais</button>
     </nav>
   </div>
@@ -253,6 +274,53 @@ footer{color:var(--mut);font-size:12px;text-align:center;padding:10px 16px 40px}
     </div>
   </div>
   <div id="aPlano"></div>
+</section>
+
+<!-- APRENDER -->
+<section class="view" id="v-aprender">
+  <div class="seg" id="segAprender">
+    <button data-a="licoes" class="on">Lições</button>
+    <button data-a="lupa">Lupa</button>
+    <button data-a="simular">Simular</button>
+  </div>
+
+  <div class="sub-a on" id="a-licoes">
+    <div class="card">
+      <div class="row between"><h2>Aprenda a investir</h2><b id="lProg"></b></div>
+      <p class="lead" style="margin-top:4px">Lições curtas, nesta ordem. Cada uma termina com uma pergunta rápida.</p>
+      <div class="prog"><i id="lBar" style="background:var(--ok)"></i></div>
+      <div id="lLista" style="margin-top:10px"></div>
+    </div>
+    <div id="lAberta"></div>
+  </div>
+
+  <div class="sub-a" id="a-lupa">
+    <div class="card">
+      <h2>Lupa de ativos</h2>
+      <p class="lead">Digite o código de uma ação ou fundo e veja os números de hoje, explicados. A lupa mostra e explica: não diz se é para comprar.</p>
+      <div class="row" style="flex-wrap:nowrap">
+        <input id="lupaIn" placeholder="ex.: ITUB4, MXRF11, BOVA11" autocapitalize="characters" style="text-transform:uppercase">
+        <button class="btn" id="lupaBtn">Ver</button>
+      </div>
+      <p class="small mut" id="lupaDica" style="margin-top:8px">Sem a chave da brapi (Mais → Ajustes), só funcionam PETR4, VALE3, ITUB4 e MGLU3.</p>
+    </div>
+    <div id="lupaOut"></div>
+  </div>
+
+  <div class="sub-a" id="a-simular">
+    <div class="card">
+      <h2>E se eu investir…?</h2>
+      <p class="lead">Veja o poder dos juros compostos: o dinheiro rende, e o rendimento também passa a render.</p>
+      <div class="grid2">
+        <div><label class="f" style="margin-top:0">Já tenho para começar</label><div class="money"><span>R$</span><input id="sIni" inputmode="numeric" placeholder="0"></div></div>
+        <div><label class="f" style="margin-top:0">Vou guardar por mês</label><div class="money"><span>R$</span><input id="sMes" inputmode="numeric" placeholder="300"></div></div>
+        <div><label class="f">Durante</label><select id="sAnos"><option value="1">1 ano</option><option value="3">3 anos</option><option value="5">5 anos</option><option value="10" selected>10 anos</option><option value="20">20 anos</option><option value="30">30 anos</option></select></div>
+        <div><label class="f">Rendendo</label><select id="sTaxa"><option value="cdi">100% do CDI de hoje (sem IR)</option><option value="poup">Poupança</option><option value="custom">Uma taxa que eu escolher</option></select></div>
+      </div>
+      <div id="sCustom" style="display:none"><label class="f">Taxa ao ano (%)</label><input id="sTx" inputmode="decimal" placeholder="10"></div>
+    </div>
+    <div id="sOut"></div>
+  </div>
 </section>
 
 <!-- MAIS -->
@@ -582,7 +650,7 @@ function renderPainel(){
   if (!S.ativos.length){
     if (d.mesesRes==null || d.faltaRes>0) {} /* passo da reserva já entrou acima */
     passos.push(["Antes de investir: tem dívida com juros altos?","Cartão de crédito rotativo e cheque especial cobram muito mais do que qualquer investimento rende. Se tiver, quitar primeiro é o melhor 'investimento'."]);
-    passos.push(["Aprenda o básico (10 minutos)","Em Mais → Dicionário rápido: o que é renda fixa, CDI, inflação, ações e fundos imobiliários."]);
+    passos.push(["Aprenda o básico: 10 lições curtas","Na aba Aprender. Cada lição leva uns 3 minutos e termina com uma pergunta. Comece por \"Por onde começar\"."]);
     passos.push(["Compare antes de escolher onde guardar","Em Mais → Comparar ofertas de renda fixa: coloque a taxa que o banco te oferece e veja se ela ganha da inflação."]);
     passos.push(["Quando fizer o primeiro investimento, cadastre aqui","Na aba Investimentos. Daí em diante o app mostra onde colocar cada aporte novo."]);
   }
@@ -707,7 +775,7 @@ function atualizarTudo(){
   return atualizarMercado().then(function(falhas){
     var lista=S.ativos.filter(function(a){return C[a.classe].cotado && n(a.qtd)>0;}), i=0;
     function prox(){ return i>=lista.length? Promise.resolve() : cotar(lista[i++]).then(prox); }
-    return prox().then(function(){ save(); renderTudo(); renderMais();
+    return prox().then(function(){ save(); renderTudo(); renderMais(); simular();
       var prob=S.ativos.filter(function(a){return a.erro;}).length;
       $("#iStatus").textContent = "Preços atualizados às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+(prob?" · "+prob+" com problema (veja abaixo)":"")+(falhas.length?" · falhou: "+falhas.join(", "):"");
     });
@@ -750,8 +818,223 @@ $("#zerar").addEventListener("click",function(){ if(!confirm("Apagar todos os da
 function abrirApp(){
   $("#wizard").style.display="none"; $("#app").style.display="block";
   $("#aMensal").value=fmtIn(n(S.aporte.mensal),0); $("#aMeses").value=String([1,3,6,12].indexOf(n(S.aporte.meses))>=0?n(S.aporte.meses):6);
-  renderTudo(); renderMais(); ir("painel");
+  renderTudo(); renderMais(); renderLicoes(); ir("painel");
 }
+
+/* ================= APRENDER: LIÇÕES ================= */
+var LICOES = [
+ {t:"Por onde começar", s:"A ordem que evita os erros mais comuns", h:
+  "<p>Investir não começa escolhendo uma ação. Começa organizando a base. A ordem que a maioria dos educadores financeiros recomenda é:</p>"+
+  "<ul><li><b>1. Saber para onde vai o dinheiro.</b> Anote os gastos de um mês. Sem sobra, não há o que investir.</li>"+
+  "<li><b>2. Sair das dívidas caras.</b> Rotativo do cartão e cheque especial cobram juros muito acima do que qualquer investimento seguro paga. Quitar é um ganho garantido.</li>"+
+  "<li><b>3. Montar a reserva de emergência.</b> De 3 a 6 meses do custo de vida, num lugar seguro e com saque no mesmo dia.</li>"+
+  "<li><b>4. Definir objetivos e prazos.</b> Dinheiro para daqui a 1 ano e para daqui a 20 anos deve ficar em lugares diferentes.</li>"+
+  "<li><b>5. Investir todo mês</b>, mesmo pouco, seguindo um plano.</li></ul>"+
+  "<p>O app foi feito exatamente nessa ordem: o Painel só sugere investir depois da reserva.</p>",
+  q:["Você tem R$ 1.000 sobrando e uma dívida no rotativo do cartão. O que costuma fazer mais sentido?",
+     ["Investir em ações para tentar ganhar mais que os juros","Quitar a dívida do cartão primeiro","Deixar na poupança e pagar o mínimo do cartão"],1,
+     "Os juros do rotativo costumam passar de 10% ao mês. Nenhum investimento seguro paga isso: quitar a dívida é o melhor retorno."]},
+
+ {t:"Juros compostos e inflação", s:"Por que o tempo é o seu maior aliado", h:
+  "<p><b>Juros compostos</b> são juros sobre juros: o que o dinheiro rende passa a render também. No começo parece pouco; com os anos, a curva acelera.</p>"+
+  "<p>Exemplo: guardar R$ 300 por mês a 10% ao ano. Em 10 anos você coloca R$ 36 mil e tem cerca de R$ 60 mil. Em 30 anos coloca R$ 108 mil e tem mais de R$ 600 mil. A maior parte vira rendimento. Teste na aba <b>Simular</b>.</p>"+
+  "<p><b>Inflação</b> é o aumento dos preços. Se os preços sobem 5% no ano e seu dinheiro rende 4%, você ficou mais pobre, mesmo vendo o saldo aumentar. Por isso o que importa é o <b>ganho real</b>: quanto rendeu acima da inflação.</p>"+
+  "<p>O Painel mostra o \"Ganho real da renda fixa\" de hoje, calculado com o CDI e o IPCA.</p>",
+  q:["Seu investimento rendeu 6% no ano e a inflação foi 7%. O que aconteceu?",
+     ["Você ganhou 6%","Seu poder de compra caiu cerca de 1%","Ficou elas por elas"],1,
+     "O saldo aumentou, mas os preços subiram mais. Com o dinheiro você compra um pouco menos do que antes."]},
+
+ {t:"Renda fixa", s:"Tesouro, CDB, LCI e LCA sem mistério", h:
+  "<p>Na renda fixa você <b>empresta</b> dinheiro e recebe juros combinados. Os principais:</p>"+
+  "<ul><li><b>Tesouro Direto</b>: empréstimo ao governo federal. O <b>Tesouro Selic</b> acompanha a taxa básica de juros e quase não oscila: muito usado para reserva. O <b>Prefixado</b> trava uma taxa. O <b>IPCA+</b> paga inflação mais um extra.</li>"+
+  "<li><b>CDB</b>: empréstimo a um banco. Normalmente rende um percentual do CDI (ex.: 100% do CDI).</li>"+
+  "<li><b>LCI e LCA</b>: parecidas com o CDB, mas hoje, para pessoa física, são isentas de imposto de renda (as regras podem mudar: confira).</li></ul>"+
+  "<h3>Três coisas para olhar</h3>"+
+  "<ul><li><b>Rentabilidade líquida</b>: CDB e Tesouro têm IR, que diminui quanto mais tempo você deixa. Use Mais → Comparar ofertas.</li>"+
+  "<li><b>Liquidez</b>: dá para sacar quando quiser ou só no vencimento?</li>"+
+  "<li><b>Garantia</b>: CDB, LCI e LCA têm o <b>FGC</b>, que devolve até R$ 250 mil por banco se o banco quebrar. O Tesouro é garantido pelo governo.</li></ul>"+
+  "<p>Atenção: Prefixado e IPCA+ <b>oscilam de preço</b> se você vender antes do vencimento. Levando até o fim, recebe o combinado.</p>",
+  q:["Qual destes é mais usado para a reserva de emergência?",
+     ["Tesouro IPCA+ com vencimento em 2045","Tesouro Selic ou CDB com liquidez diária","Ações de uma empresa grande"],1,
+     "A reserva precisa de segurança e saque rápido. Títulos longos e ações podem estar em queda justo quando você precisar."]},
+
+ {t:"Ações", s:"Ser sócio de uma empresa", h:
+  "<p>Ao comprar uma <b>ação</b>, você vira sócio de um pedacinho da empresa. Ganha de dois jeitos: se a empresa crescer e a ação valorizar, e com <b>dividendos</b>, a parte do lucro que a empresa distribui.</p>"+
+  "<p><b>Por que o preço sobe e desce todo dia?</b> Porque milhões de pessoas compram e vendem conforme notícias, juros, humor do mercado e expectativas. No curto prazo, isso parece aleatório. No longo prazo, o preço tende a acompanhar o lucro da empresa.</p>"+
+  "<h3>Números que a lupa mostra</h3>"+
+  "<ul><li><b>P/L</b> (preço/lucro): quantos anos de lucro atual equivalem ao preço. P/L baixo pode ser oportunidade ou sinal de problema.</li>"+
+  "<li><b>Dividend yield</b>: quanto a ação pagou de dividendos em 12 meses, em % do preço.</li>"+
+  "<li><b>Faixa de 52 semanas</b>: o menor e o maior preço do último ano.</li></ul>"+
+  "<p>Nenhum número sozinho diz se é bom. Compare com empresas do mesmo setor e entenda o negócio. E invista em ações só o dinheiro que pode ficar parado <b>por anos</b>.</p>",
+  q:["Uma ação caiu 15% em uma semana. O que isso diz, sozinho?",
+     ["Que a empresa vai falir","Que é hora certa de comprar","Pouco: preço no curto prazo oscila por muitos motivos"],2,
+     "Uma queda curta pode ser notícia, juros ou humor do mercado. Para decidir, é preciso olhar o negócio e o prazo, não só o preço."]},
+
+ {t:"Fundos imobiliários", s:"Renda de aluguéis sem comprar imóvel", h:
+  "<p>Um <b>fundo imobiliário (FII)</b> junta o dinheiro de muita gente para investir em imóveis (shoppings, galpões, escritórios) ou em títulos ligados a imóveis. Você compra <b>cotas</b> na bolsa, com códigos que terminam em 11 (ex.: MXRF11).</p>"+
+  "<ul><li>A maioria distribui <b>rendimentos todo mês</b>, vindos dos aluguéis ou juros.</li>"+
+  "<li>Hoje, esses rendimentos costumam ser isentos de IR para pessoa física, dentro de regras: confira as atuais.</li>"+
+  "<li>A cota <b>oscila</b> na bolsa como uma ação.</li></ul>"+
+  "<h3>Riscos</h3>"+
+  "<ul><li><b>Vacância</b>: imóvel vazio não paga aluguel.</li><li><b>Juros altos</b> costumam derrubar o preço das cotas.</li><li>Fundos pequenos podem ser difíceis de vender.</li></ul>"+
+  "<p>Muita gente diversifica entre vários fundos e tipos de imóvel.</p>",
+  q:["De onde vem o rendimento mensal de um fundo imobiliário de tijolo?",
+     ["Dos aluguéis dos imóveis do fundo","De um valor fixo garantido pelo governo","Da valorização da cota"],0,
+     "O fundo recebe os aluguéis e distribui aos cotistas. Por isso imóvel vazio (vacância) reduz o rendimento."]},
+
+ {t:"Exterior e dólar", s:"Não depender só do Brasil", h:
+  "<p>Ter uma parte fora do Brasil protege se a economia daqui for mal ou se o real perder valor. Formas comuns e acessíveis:</p>"+
+  "<ul><li><b>ETFs na bolsa brasileira</b> que acompanham índices de fora, como o IVVB11 (empresas grandes dos EUA). Compra-se como uma ação, em reais.</li>"+
+  "<li><b>BDRs</b>: recibos negociados aqui que representam ações de fora.</li>"+
+  "<li><b>Conta em corretora no exterior</b>: investe direto em dólar.</li></ul>"+
+  "<p>O valor sobe e desce com a bolsa de fora <b>e</b> com o dólar. Por isso costuma ser uma parte da carteira, não tudo.</p>",
+  q:["Por que muitas pessoas têm uma parte do dinheiro no exterior?",
+     ["Porque rende garantido","Para não depender só da economia e da moeda do Brasil","Porque não oscila"],1,
+     "É uma forma de diversificar: quando o Brasil vai mal, outros mercados ou o dólar podem compensar."]},
+
+ {t:"Risco e diversificação", s:"Não colocar todos os ovos na mesma cesta", h:
+  "<p><b>Risco</b> é a chance de o resultado ser diferente do esperado, inclusive de perder. Investimentos que podem render mais costumam oscilar mais.</p>"+
+  "<p><b>Diversificar</b> é espalhar o dinheiro por tipos diferentes (renda fixa, ações, fundos, exterior) e, dentro de cada tipo, por vários ativos. Assim, um problema isolado pesa pouco no total.</p>"+
+  "<p><b>Prazo é tudo.</b> Dinheiro que você vai usar logo deve estar no seguro. Dinheiro para muitos anos aguenta mais oscilação em troca de crescer mais. É isso que a pergunta 2 do início define.</p>"+
+  "<p>O app ajuda aqui: avisa se um ativo passou do seu limite e mostra a divisão atual contra a sua meta.</p>",
+  q:["Você tem todo o seu dinheiro em uma única ação. Qual é o principal problema?",
+     ["Nenhum, se a empresa for grande","Se algo der errado com essa empresa, você perde muito de uma vez","Você paga mais imposto"],1,
+     "Até empresas grandes passam por crises. Espalhar o dinheiro reduz o estrago de um problema isolado."]},
+
+ {t:"Corretora e primeiro investimento", s:"Como dar o primeiro passo com segurança", h:
+  "<p>Para investir você precisa de uma <b>corretora</b> (ou do app do seu banco). Antes de abrir conta:</p>"+
+  "<ul><li>Confira se é <b>autorizada pelo Banco Central e pela CVM</b> (dá para checar nos sites deles).</li>"+
+  "<li>Prefira as que <b>não cobram taxa</b> para Tesouro Direto e para comprar ações.</li>"+
+  "<li>Nunca passe sua senha para ninguém, nem para \"assessor\" que te procurou no WhatsApp.</li></ul>"+
+  "<h3>Um primeiro passo comum</h3>"+
+  "<p>Muita gente começa pela reserva: abre a conta, transfere um valor e aplica em <b>Tesouro Selic</b> ou num CDB de liquidez diária de banco grande. Depois, com a reserva completa, estuda e começa aos poucos na renda variável.</p>"+
+  "<p>Feito o primeiro investimento, cadastre na aba Investimentos.</p>",
+  q:["Alguém te chama no WhatsApp dizendo ser assessor e pede sua senha da corretora \"para operar por você\". O que fazer?",
+     ["Passar a senha, se ele parecer confiável","Nunca passar: é golpe ou risco enorme","Passar só a senha de 4 dígitos"],1,
+     "Corretoras e assessores sérios nunca pedem sua senha. Quem pede quer acesso ao seu dinheiro."]},
+
+ {t:"Golpes e armadilhas", s:"Como reconhecer e fugir", h:
+  "<p>Sinais clássicos de golpe ou de armadilha:</p>"+
+  "<ul><li><b>Retorno garantido alto</b> (\"2% ao mês garantido\"). Retorno alto sempre vem com risco.</li>"+
+  "<li><b>Pressa</b>: \"só hoje\", \"últimas vagas\".</li>"+
+  "<li><b>Ganhar por indicação</b> de novas pessoas: típico de pirâmide.</li>"+
+  "<li><b>Empresa não autorizada</b> pela CVM ou pelo Banco Central.</li>"+
+  "<li><b>Sinais e robôs</b> que prometem acertar o melhor momento de comprar e vender. Ninguém consegue isso de forma consistente.</li>"+
+  "<li><b>Pedido de senha, código ou depósito na conta de uma pessoa.</b></li></ul>"+
+  "<p>Regra de ouro: se parece bom demais para ser verdade, provavelmente é golpe.</p>",
+  q:["Um grupo promete 5% ao mês garantido e paga bônus por cada amigo que você trouxer. Isso é:",
+     ["Uma boa oportunidade","Um forte sinal de pirâmide financeira","Renda fixa"],1,
+     "Retorno garantido alto mais ganho por indicação é o retrato da pirâmide: paga os antigos com o dinheiro dos novos até quebrar."]},
+
+ {t:"Quando vender?", s:"Regras em vez de impulso", h:
+  "<p>Ninguém acerta o momento perfeito de sair. Em vez de tentar adivinhar, quem investe a longo prazo costuma vender por <b>motivos planejados</b>:</p>"+
+  "<ul><li><b>Chegou o objetivo</b>: o dinheiro era para a entrada do imóvel e chegou a hora.</li>"+
+  "<li><b>Rebalancear</b>: uma parte cresceu demais e passou da sua meta. O app mostra isso no Painel.</li>"+
+  "<li><b>O motivo da compra mudou</b>: a empresa piorou de verdade, não só o preço.</li>"+
+  "<li><b>Precisa do dinheiro</b> (e por isso a reserva existe: para não precisar vender na hora errada).</li></ul>"+
+  "<p>O erro mais comum é <b>vender em pânico</b> depois de uma queda e <b>comprar na euforia</b> depois de uma alta. Ter um plano escrito ajuda a não fazer isso.</p>",
+  q:["Suas ações caíram 20% num mês ruim do mercado, mas nada mudou nas empresas e você só precisa do dinheiro daqui a 15 anos. O que o plano costuma dizer?",
+     ["Vender tudo antes que caia mais","Manter o plano e seguir aportando conforme as metas","Colocar todo o resto do dinheiro em uma ação só"],1,
+     "Quedas fazem parte do caminho de longo prazo. Vender em pânico transforma uma queda temporária em perda definitiva."]}
+];
+function renderLicoes(){
+  S.licoes = S.licoes || {};
+  var feitas = LICOES.filter(function(_,i){ return S.licoes[i]; }).length;
+  $("#lProg").textContent = feitas+" de "+LICOES.length;
+  $("#lBar").style.width = (feitas/LICOES.length*100)+"%";
+  $("#lLista").innerHTML = LICOES.map(function(l,i){
+    return '<button class="lic'+(S.licoes[i]?" feita":"")+'" data-lic="'+i+'"><span class="ck">'+(S.licoes[i]?"✓":(i+1))+'</span><div><b>'+l.t+'</b><span>'+l.s+'</span></div></button>'; }).join("");
+}
+function abrirLicao(i){
+  var l=LICOES[i], q=l.q;
+  $("#lAberta").innerHTML = '<div class="card" id="licCard"><p class="small mut">Lição '+(i+1)+' de '+LICOES.length+'</p><h2 style="margin:4px 0 12px">'+l.t+'</h2><div class="texto">'+l.h+'</div>'+
+    '<div class="help quiz" style="margin-top:6px"><b>Pergunta rápida</b><p style="margin-top:6px;color:var(--txt)">'+q[0]+'</p>'+
+    q[1].map(function(o,j){ return '<button data-resp="'+j+'">'+o+'</button>'; }).join("")+'<p id="qFb" style="margin-top:10px"></p></div>'+
+    '<div class="row between" style="margin-top:14px">'+(i>0?'<button class="btn ghost" data-lic="'+(i-1)+'">← Anterior</button>':'<span></span>')+
+    (i<LICOES.length-1?'<button class="btn ghost" data-lic="'+(i+1)+'">Próxima →</button>':'')+'</div></div>';
+  $("#licCard").scrollIntoView({behavior:"smooth",block:"start"});
+  $("#lAberta").querySelector(".quiz").onclick=function(e){
+    var b=e.target.closest("[data-resp]"); if(!b) return;
+    var ok = +b.dataset.resp===q[2];
+    this.querySelectorAll("[data-resp]").forEach(function(x){ x.classList.remove("certa","errada"); });
+    b.classList.add(ok?"certa":"errada");
+    $("#qFb").innerHTML = (ok?'<b style="color:var(--ok)">Isso mesmo!</b> ':'<b style="color:var(--bad)">Quase.</b> ')+'<span class="mut">'+q[3]+'</span>';
+    if (ok){ S.licoes=S.licoes||{}; S.licoes[i]=1; save(); renderLicoes(); }
+  };
+}
+$("#lLista").addEventListener("click",function(e){ var b=e.target.closest("[data-lic]"); if(b) abrirLicao(+b.dataset.lic); });
+$("#lAberta").addEventListener("click",function(e){ var b=e.target.closest(".row [data-lic]"); if(b) abrirLicao(+b.dataset.lic); });
+$("#segAprender").addEventListener("click",function(e){ var b=e.target.closest("[data-a]"); if(!b) return;
+  $$("#segAprender button").forEach(function(x){x.classList.toggle("on",x===b);});
+  $$(".sub-a").forEach(function(s){s.classList.toggle("on",s.id==="a-"+b.dataset.a);}); });
+
+/* ================= APRENDER: LUPA ================= */
+function grande(v){ if(!v) return "—"; var a=Math.abs(v);
+  return a>=1e12? "R$ "+(v/1e12).toLocaleString("pt-BR",{maximumFractionDigits:1})+" tri" : a>=1e9? "R$ "+(v/1e9).toLocaleString("pt-BR",{maximumFractionDigits:1})+" bi" : a>=1e6? "R$ "+(v/1e6).toLocaleString("pt-BR",{maximumFractionDigits:1})+" mi" : brl(v); }
+function met(k,expl,v,cls){ return '<div class="met"><div class="k"><b>'+k+'</b><span>'+expl+'</span></div><div class="v '+(cls||"")+'">'+v+'</div></div>'; }
+function lupa(){
+  var tk=$("#lupaIn").value.trim().toUpperCase().split(/\s+/)[0];
+  if(!/^[A-Z0-9.\-]{3,12}$/.test(tk)){ $("#lupaOut").innerHTML='<div class="card"><p class="err">Digite um código válido, ex.: ITUB4.</p></div>'; return; }
+  $("#lupaOut").innerHTML='<div class="card"><p class="mut">Buscando '+esc(tk)+'…</p></div>';
+  var url="https://brapi.dev/api/quote/"+encodeURIComponent(tk)+"?range=1y&interval=1mo&fundamental=true&dividends=true"+(S.config.token?"&token="+encodeURIComponent(S.config.token):"");
+  fetch(url).then(function(r){ return r.json().then(function(j){ return {ok:r.ok,j:j}; }); }).then(function(x){
+    var q=x.j&&x.j.results&&x.j.results[0];
+    if(!x.ok||!q||!q.regularMarketPrice){
+      var msg = (x.j&&x.j.code==="MISSING_TOKEN") ? "Para ver "+esc(tk)+" é preciso a chave grátis da brapi. Crie em brapi.dev e cole em Mais → Ajustes." : "Não encontrei "+esc(tk)+". Confira o código (ex.: ITUB4, MXRF11).";
+      $("#lupaOut").innerHTML='<div class="card"><p class="err">'+msg+'</p></div>'; return; }
+    var p=q.regularMarketPrice, ch=q.regularMarketChangePercent||0, fii=/11$/.test(tk);
+    var hist=(q.historicalDataPrice||[]).filter(function(h){return h.close;});
+    var v12 = hist.length>1 ? (p/hist[0].close-1)*100 : null;
+    var agora=Date.now(), umAno=365*864e5, div=0;
+    ((q.dividendsData&&q.dividendsData.cashDividends)||[]).forEach(function(d){ var t=Date.parse(d.paymentDate); if(t<=agora && t>agora-umAno) div+=d.rate||0; });
+    var dy = div>0? div/p*100 : null;
+    var lo=q.fiftyTwoWeekLow, hi=q.fiftyTwoWeekHigh, pos = (lo&&hi&&hi>lo)? (p-lo)/(hi-lo)*100 : null;
+    var spark="";
+    if (hist.length>1){ var W=600,H=90,pd=6, vals=hist.map(function(h){return h.close;}).concat([p]), mx=Math.max.apply(null,vals), mn=Math.min.apply(null,vals); if(mx===mn){mx+=1;mn-=1;}
+      var pts=vals.map(function(v,i){ return (pd+i*(W-2*pd)/(vals.length-1)).toFixed(1)+","+(H-pd-(v-mn)/(mx-mn)*(H-2*pd)).toFixed(1); }).join(" ");
+      spark='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;margin:10px 0 2px" role="img" aria-label="Preço nos últimos 12 meses"><polyline points="'+pts+'" fill="none" stroke="'+(v12>=0?"var(--ok)":"var(--bad)")+'" stroke-width="3" stroke-linejoin="round"/></svg><p class="small mut">Preço mês a mês nos últimos 12 meses</p>'; }
+    var h='<div class="card"><div class="row" style="gap:12px">'+(q.logourl?'<img src="'+esc(q.logourl)+'" alt="" width="40" height="40" style="border-radius:10px;background:#fff">':'')+
+      '<div><h2>'+esc(q.symbol)+'</h2><p class="small mut">'+esc(q.longName||q.shortName||"")+'</p></div></div>'+
+      '<div class="row" style="margin-top:12px;align-items:baseline"><span class="big">'+brl2(p)+'</span><b class="'+(ch>=0?"up":"down")+'">'+(ch>=0?"▲ +":"▼ ")+pct(ch,2)+' hoje</b></div>'+spark+'</div>';
+    h+='<div class="card"><h2>Os números, explicados</h2>';
+    if (v12!=null) h+=met("Variação em 12 meses","Quanto o preço subiu ou caiu no último ano. Não inclui dividendos.",(v12>=0?"+":"")+pct(v12,1),v12>=0?"up":"down");
+    if (pos!=null) h+=met("Faixa do último ano","Menor e maior preço em 52 semanas. Hoje está a "+pct(pos)+" do caminho entre o mínimo e o máximo.",brl2(lo)+" – "+brl2(hi));
+    if (dy!=null) h+=met(fii?"Rendimento em 12 meses":"Dividend yield (12 meses)", fii?"Quanto o fundo pagou de rendimentos no último ano, em % do preço de hoje. O passado não garante o futuro.":"Dividendos e JCP pagos no último ano, em % do preço de hoje. O passado não garante o futuro.", pct(dy,1)+'<div class="small mut" style="font-weight:400">'+brl2(div)+(fii?' por cota':' por ação')+'</div>');
+    if (!fii && q.priceEarnings) h+=met("P/L (preço ÷ lucro)","O preço equivale a "+q.priceEarnings.toLocaleString("pt-BR",{maximumFractionDigits:1})+" anos do lucro atual. Só faz sentido comparar com empresas do mesmo setor.", q.priceEarnings.toLocaleString("pt-BR",{maximumFractionDigits:1}));
+    if (!fii && q.earningsPerShare) h+=met("Lucro por ação","Quanto de lucro a empresa fez, no último ano, para cada ação.",brl2(q.earningsPerShare));
+    if (q.marketCap) h+=met(fii?"Valor de mercado do fundo":"Valor de mercado","Quanto a bolsa diz que "+(fii?"o fundo inteiro":"a empresa inteira")+" vale hoje (preço × total de "+(fii?"cotas":"ações")+").",grande(q.marketCap));
+    if (q.regularMarketVolume) h+=met("Volume negociado hoje","Quantas "+(fii?"cotas":"ações")+" trocaram de mãos. Volume alto = fácil de comprar e vender.",q.regularMarketVolume.toLocaleString("pt-BR"));
+    h+='<div class="help">Esses números ajudam a <b>entender</b> o ativo, não a prever o preço. Antes de investir, entenda o que '+(fii?"o fundo faz e quais imóveis tem":"a empresa faz, como ganha dinheiro e quanto deve")+', e lembre: renda variável só com dinheiro de longo prazo.</div></div>';
+    $("#lupaOut").innerHTML=h;
+  }).catch(function(){ $("#lupaOut").innerHTML='<div class="card"><p class="err">Sem conexão com a internet para buscar os dados.</p></div>'; });
+}
+$("#lupaBtn").addEventListener("click",lupa);
+$("#lupaIn").addEventListener("keydown",function(e){ if(e.key==="Enter") lupa(); });
+
+/* ================= APRENDER: SIMULADOR ================= */
+function simular(){
+  var ini=n($("#sIni").value), mes=n($("#sMes").value), anos=+$("#sAnos").value, tipo=$("#sTaxa").value, m=S.mercado;
+  $("#sCustom").style.display = tipo==="custom"?"block":"none";
+  var taxa = tipo==="cdi"? n(m.cdi) : tipo==="poup"? (n(m.selic)>8.5 ? (Math.pow(1.005,12)-1)*100 : n(m.selic)*0.7) /* regra da poupança, sem a TR */ : n($("#sTx").value);
+  if ((tipo!=="custom" && !m.cdi) ){ $("#sOut").innerHTML='<div class="card"><p class="err">Atualize o mercado no Painel para usar a taxa de hoje.</p></div>'; return; }
+  if (!ini && !mes){ $("#sOut").innerHTML=""; return; }
+  var i=Math.pow(1+taxa/100,1/12)-1, saldo=ini, pontos=[[0,ini,ini]], aportado=ini;
+  for (var k=1;k<=anos*12;k++){ saldo=saldo*(1+i)+mes; aportado+=mes; if(k%12===0) pontos.push([k/12,aportado,saldo]); }
+  var juros=saldo-aportado, inf=n(m.ipca)||0, real=saldo/Math.pow(1+inf/100,anos);
+  var W=600,H=170,pd=8, mx=saldo||1;
+  function path(idx){ return pontos.map(function(p,j){ return (pd+j*(W-2*pd)/(pontos.length-1)).toFixed(1)+","+(H-pd-p[idx]/mx*(H-2*pd)).toFixed(1); }).join(" "); }
+  var graf = pontos.length>1 ? '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;margin-top:12px" role="img" aria-label="Evolução do dinheiro">'+
+    '<polyline points="'+path(2)+'" fill="none" stroke="var(--ok)" stroke-width="3" stroke-linejoin="round"/>'+
+    '<polyline points="'+path(1)+'" fill="none" stroke="var(--mut)" stroke-width="2" stroke-dasharray="6 5"/></svg>'+
+    '<div class="row small mut" style="gap:16px"><span><span class="dot" style="background:var(--ok)"></span> com rendimento</span><span>- - - só o que você guardou</span></div>' : "";
+  $("#sOut").innerHTML='<div class="card"><p class="mut">Em '+anos+' ano'+(anos>1?"s":"")+', rendendo '+pct(taxa,2)+' ao ano, você teria</p><div class="big">'+brl(saldo)+'</div>'+
+    '<div class="chips" style="margin-top:12px"><div class="chip"><span class="mut">Você guardou</span><b>'+brl(aportado)+'</b></div><div class="chip"><span class="mut">Rendimento</span><b class="up">+'+brl(juros)+'</b></div>'+
+    (inf?'<div class="chip"><span class="mut">Em dinheiro de hoje*</span><b>'+brl(real)+'</b></div>':'')+'</div>'+graf+
+    '<p class="small mut" style="margin-top:10px">'+(inf?'* Descontando a inflação de hoje ('+pct(inf,1)+' ao ano): é quanto esse valor compraria em preços atuais. ':'')+
+    'Simulação com taxa constante. Na vida real a taxa muda com o tempo'+(tipo==="cdi"?", e CDB e Tesouro têm imposto de renda":"")+'. Renda variável não tem rendimento garantido.</p></div>';
+}
+["#sIni","#sMes"].forEach(function(s){ moneyMask($(s)); $(s).addEventListener("input",simular); });
+["#sAnos","#sTaxa","#sTx"].forEach(function(s){ $(s).addEventListener("input",simular); });
 
 /* ================= INÍCIO ================= */
 if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(function(){});
