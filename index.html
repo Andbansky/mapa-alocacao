@@ -198,6 +198,39 @@ th{text-align:left;color:var(--mut);font-weight:500;font-size:12px;padding:6px 4
 td{padding:8px 4px;border-bottom:1px solid var(--sep)}
 .num{text-align:right;font-variant-numeric:tabular-nums}
 footer{color:var(--mut);font-size:12px;text-align:center;padding:4px 16px 0}
+/* palavras explicadas ao toque */
+.term{font-style:normal;color:var(--acc2);border-bottom:1.5px dotted var(--acc2);cursor:pointer;padding-bottom:1px}
+.pop h2{display:flex;align-items:center;gap:8px}
+.pop .ex{background:var(--glass2);border-radius:14px;padding:12px 14px;margin-top:12px;font-size:15px}
+.pop .ex small{display:block;color:var(--mut);font-size:12px;margin-bottom:4px}
+
+/* trilha */
+#trilha{display:none;position:fixed;inset:0;z-index:40;overflow:auto;background:var(--bg)}
+#trilha::before{content:"";position:fixed;inset:-20%;z-index:-1;background:radial-gradient(45% 40% at 20% 15%,var(--bgA) 0%,transparent 70%),radial-gradient(45% 40% at 85% 85%,var(--bgB) 0%,transparent 70%);opacity:.75}
+#trilha.on{display:block;animation:fade .25s}
+.tr-top{position:sticky;top:0;z-index:2;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;background:color-mix(in srgb,var(--bg) 70%,transparent);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.tr-top .row{max-width:620px;margin:0 auto}
+.tr-body{max-width:620px;margin:0 auto;padding:18px 16px calc(40px + env(safe-area-inset-bottom))}
+.tr-n{font-size:13px;font-weight:700;color:var(--acc2);letter-spacing:.5px;text-transform:uppercase}
+.tr-body h1{font-size:28px;margin:6px 0 14px}
+.tr-body .texto{font-size:17px;line-height:1.55}
+.tr-body .texto p{margin-bottom:14px}
+.tr-foot{display:flex;gap:10px;margin-top:22px}
+.tr-foot .btn{padding:16px 20px;font-size:17px}
+.jor{display:flex;align-items:center;gap:14px}
+.jor .n{flex:none;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--acc),var(--c-int));display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px}
+.mapa{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.mapa i{width:22px;height:22px;border-radius:7px;background:var(--glass2);display:grid;place-items:center;font-style:normal;font-size:11px;color:var(--mut);cursor:pointer}
+.mapa i.ok{background:var(--acc);color:#fff}
+.mapa i.at{outline:2px solid var(--acc2);color:var(--txt)}
+.opt2{display:flex;gap:10px;margin:6px 0 14px}
+.opt2 button{flex:1;background:var(--glass2);border:2px solid transparent;border-radius:14px;padding:14px;color:var(--txt);font:inherit;font-weight:600;cursor:pointer}
+.opt2 button.sel{border-color:var(--acc)}
+.calc{background:var(--glass2);border-radius:16px;padding:14px;margin:4px 0 14px}
+.calc .ln{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--sep)}
+.calc .ln:first-child{border-top:0}
+.calc .ln b{font-variant-numeric:tabular-nums}
+
 .toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);z-index:60;padding:10px 16px;border-radius:14px;font-size:14px;font-weight:600;display:none}
 .toast.on{display:block;animation:fade .2s}
 </style>
@@ -267,6 +300,7 @@ footer{color:var(--mut);font-size:12px;text-align:center;padding:4px 16px 0}
 
 <!-- INÍCIO -->
 <section class="view on" id="v-inicio">
+  <div class="glass card" id="pJornada"></div>
   <div class="glass card hero">
     <p class="mut">Seus investimentos</p>
     <div class="val" id="iTotal">R$ 0</div>
@@ -427,6 +461,12 @@ footer{color:var(--mut);font-size:12px;text-align:center;padding:4px 16px 0}
   <button data-v="aprender"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>Aprender</button>
   <button data-v="ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Ajustes</button>
 </nav>
+</div>
+
+<!-- TRILHA -->
+<div id="trilha">
+  <div class="tr-top"><div class="row between"><button class="btn link" id="trSair">‹ Voltar ao app</button><div class="prog" style="flex:1;margin:0 14px"><i id="trBar"></i></div><b id="trPos" class="small"></b></div></div>
+  <div class="tr-body" id="trBody"></div>
 </div>
 
 <!-- FOLHA: adicionar / editar ativo -->
@@ -718,7 +758,7 @@ $("#wizard").addEventListener("click",function(e){
   if(e.target.closest("#wAdd")){abrirFolha(null,renderWz);return;}
   var it=e.target.closest(".inv");if(it){abrirFolha(S.ativos.filter(function(x){return x.id===it.dataset.id;})[0],renderWz);}
 });
-$("#wzFim").addEventListener("click",function(){S.aporte.mensal=n($("#wAporte").value);S.setup=true;save();abrirApp();atualizarTudo();});
+$("#wzFim").addEventListener("click",function(){S.aporte.mensal=n($("#wAporte").value);S.setup=true;save();abrirApp();atualizarTudo();if(!(S.trilha&&S.trilha.ok&&Object.keys(S.trilha.ok).length))abrirTrilha(0);});
 function abrirWizard(){wz=0;$("#app").style.display="none";$("#wizard").style.display="block";
   $("#wGasto").value=fmtIn(n(S.reserva.gasto),0);$("#wReserva").value=fmtIn(reservaSaldo(),0);$("#wAporte").value=fmtIn(n(S.aporte.mensal),0);
   $("#wPrazos").innerHTML=prazosHTML();wzPaint();}
@@ -762,12 +802,13 @@ function renderInicio(){
   d.poucos.forEach(function(k){passos.push(["Diversifique em "+C[k].nome,"Hoje é um ativo só nesse tipo. Com mais de um, um problema isolado pesa menos."]);});
   if(!d.T){
     passos.push(["Tem dívida com juros altos? Quite primeiro","Rotativo do cartão e cheque especial cobram muito mais do que qualquer investimento rende."]);
-    passos.push(["Aprenda o básico: 12 lições curtas","Na aba Aprender, uns 3 minutos cada. Comece por \"Por onde começar\"."]);
+    passos.push(["Siga a sua jornada, uma etapa por vez","O cartão lá em cima te leva pela mão: dívidas, reserva, imposto, primeiro investimento. Uns 2 minutos por etapa."]);
     passos.push(["Veja onde fica cada coisa no Nubank","Em Aprender → No Nubank: Caixinha, Tesouro e como achar um fundo pelo código."]);
   }
   if(!n(S.aporte.mensal))passos.push(["Defina quanto vai investir por mês","Na aba Aportar. Pouco, todo mês, já faz diferença."]);
   if(!passos.length)passos.push(["Siga aportando todo mês","Está tudo equilibrado. Volte aqui quando fizer um novo aporte."]);
-  $("#pPassos").innerHTML=passos.map(function(x){return '<li><b>'+x[0]+'</b><span>'+x[1]+'</span></li>';}).join("");
+  $("#pPassos").innerHTML=passos.map(function(x){return '<li><b>'+x[0]+'</b><span>'+T(x[1])+'</span></li>';}).join("");
+  renderJornada();
 
   var meta=n(S.reserva.meta),pr=d.mesesRes==null?0:d.mesesRes/meta*100;
   $("#pReserva").innerHTML='<div class="ringwrap">'+ring(pr,pr>=100?"var(--acc2)":pr>=50?"var(--acc)":"var(--warn)")+'<div><h2>Reserva de emergência</h2>'+
@@ -791,7 +832,7 @@ function renderInicio(){
       '<p class="small mut" style="margin-top:6px">Sobe e desce de um dia é normal e, sozinho, não diz nada sobre comprar ou vender.</p>':'';
   $("#pMercadoNota").textContent=mk.atualizado?"Atualizado em "+mk.atualizado+" · Banco Central, AwesomeAPI e brapi":"Toque em Atualizar para buscar os números de hoje.";
   var dia=Math.floor((Date.now()-new Date(new Date().getFullYear(),0,0))/864e5);
-  $("#pDica").innerHTML='<div class="ic">💡</div><div><p class="small mut">Dica do dia</p><p style="margin-top:2px">'+DICAS[dia%DICAS.length]+'</p></div>';
+  $("#pDica").innerHTML='<div class="ic">💡</div><div><p class="small mut">Dica do dia</p><p style="margin-top:2px">'+T(DICAS[dia%DICAS.length])+'</p></div>';
 }
 
 function renderCarteira(){
@@ -906,7 +947,7 @@ function renderLicoes(){S.licoes=S.licoes||{};var f=LICOES.filter(function(_,i){
   $("#lProg").textContent=f+" de "+LICOES.length;$("#lBar").style.width=(f/LICOES.length*100)+"%";
   $("#lLista").innerHTML=LICOES.map(function(l,i){return '<button class="lic'+(S.licoes[i]?" feita":"")+'" data-lic="'+i+'"><span class="ck">'+(S.licoes[i]?"✓":(i+1))+'</span><div><b>'+l.t+'</b><span>'+l.s+'</span></div></button>';}).join("");}
 function abrirLicao(i){var l=LICOES[i],q=l.q;
-  $("#lAberta").innerHTML='<div class="glass card" id="licCard"><p class="small mut">Lição '+(i+1)+' de '+LICOES.length+'</p><h2 style="margin:4px 0 12px">'+l.t+'</h2><div class="texto">'+l.h+'</div>'+
+  $("#lAberta").innerHTML='<div class="glass card" id="licCard"><p class="small mut">Lição '+(i+1)+' de '+LICOES.length+'</p><h2 style="margin:4px 0 12px">'+l.t+'</h2><div class="texto">'+T(l.h)+'</div>'+
     '<div class="help quiz"><b>Pergunta rápida</b><p style="margin-top:6px;color:var(--txt)">'+q[0]+'</p>'+q[1].map(function(o,j){return '<button data-resp="'+j+'">'+o+'</button>';}).join("")+'<p id="qFb" style="margin-top:10px"></p></div>'+
     '<div class="row between" style="margin-top:14px">'+(i>0?'<button class="btn ghost" data-nav="'+(i-1)+'">← Anterior</button>':'<span></span>')+(i<LICOES.length-1?'<button class="btn ghost" data-nav="'+(i+1)+'">Próxima →</button>':'')+'</div></div>';
   $("#licCard").scrollIntoView({behavior:"smooth",block:"start"});
@@ -1029,6 +1070,113 @@ function simular(){
 }
 ["#sIni","#sMes"].forEach(function(s){moneyMask($(s));$(s).addEventListener("input",simular);});
 ["#sAnos","#sTaxa","#sTx"].forEach(function(s){$(s).addEventListener("input",simular);});
+
+/* ================= DICIONÁRIO AO TOQUE ================= */
+var TERMOS = {
+  cdi:{t:"CDI",p:["CDI","do CDI"],d:"É a taxa que os bancos usam para emprestar dinheiro entre si. Quase igual à Selic.",x:function(m){return m.cdi?"Hoje o CDI está em "+pct(m.cdi,2)+" ao ano. Uma Caixinha a 100% do CDI rende isso, antes do imposto.":"";}},
+  selic:{t:"Selic",p:["Selic","taxa Selic"],d:"É a taxa básica de juros do Brasil, decidida pelo Banco Central a cada 45 dias. Quando ela sobe, a renda fixa rende mais e os empréstimos ficam mais caros.",x:function(m){return m.selic?"Hoje: "+pct(m.selic,2)+" ao ano.":"";}},
+  inflacao:{t:"Inflação (IPCA)",p:["inflação","IPCA"],d:"É o quanto os preços sobem. O IPCA é a medida oficial. Se seu dinheiro rende menos que a inflação, ele compra menos coisas, mesmo com o saldo maior.",x:function(m){return m.ipca?"Nos últimos 12 meses os preços subiram "+pct(m.ipca,2)+". R$ 100 de um ano atrás compram hoje o que custava R$ "+(100/(1+m.ipca/100)).toFixed(0)+".":"";}},
+  ir:{t:"Imposto de renda (IR)",p:["imposto de renda","imposto","IR"],d:"Uma parte do que você ganha com o investimento vai para o governo. Na renda fixa é descontado sozinho, na hora do saque, só sobre o rendimento, nunca sobre o que você colocou.",x:function(){return "Quanto mais tempo você deixa, menos paga: 22,5% (até 6 meses), 20% (até 1 ano), 17,5% (até 2 anos), 15% (mais de 2 anos). Se R$ 10.000 renderam R$ 1.000 em 1 ano, o imposto é R$ 200 e sobram R$ 800 de ganho.";}},
+  liquidez:{t:"Liquidez",p:["liquidez","liquidez diária"],d:"É a rapidez com que o investimento vira dinheiro na sua conta. \"Liquidez diária\" = saca no mesmo dia.",x:function(){return "A reserva de emergência precisa de liquidez diária. Um título que só paga em 2030 tem liquidez baixa.";}},
+  fgc:{t:"FGC",p:["FGC"],d:"Fundo Garantidor de Créditos. Se o banco quebrar, ele devolve o seu dinheiro, até R$ 250 mil por banco. Vale para CDB, LCI, LCA, poupança e Caixinhas.",x:function(){return "Não vale para ações, fundos imobiliários nem Tesouro (o Tesouro é garantido pelo próprio governo).";}},
+  cota:{t:"Cota",p:["cota","cotas"],d:"Um pedacinho de um fundo ou de uma empresa. Você compra pelo código, e o preço da cota muda todo dia na bolsa.",x:function(){return "Se a cota do MXRF11 custa R$ 10 e você tem 200 cotas, você tem R$ 2.000 nele.";}},
+  dividendos:{t:"Dividendos / rendimentos",p:["dividendos","dividendo","rendimentos","dividend yield"],d:"Parte do lucro que a empresa ou o fundo distribui para quem tem cotas. Cai na sua conta sem você vender nada. Fundos imobiliários costumam pagar todo mês.",x:function(){return "Dividend yield é quanto pagou em 12 meses dividido pelo preço: 8% significa que, a cada R$ 100 investidos, caíram R$ 8 na conta no ano.";}},
+  rf:{t:"Renda fixa",p:["renda fixa"],d:"Você empresta dinheiro (para um banco ou para o governo) e recebe de volta com juros combinados. É a parte segura: oscila pouco.",x:function(){return "Caixinha, Tesouro Selic, CDB, LCI e LCA são renda fixa.";}},
+  rv:{t:"Renda variável",p:["renda variável"],d:"Investimentos cujo preço sobe e desce todo dia, como ações e fundos imobiliários. Podem render mais, mas podem cair. Só para dinheiro de longo prazo.",x:function(){return "Cair 10% num mês é normal na renda variável. Por isso a reserva fica fora dela.";}},
+  acao:{t:"Ação",p:["ação","ações"],d:"Um pedacinho de uma empresa. Ao comprar, você vira sócio: ganha se ela crescer e quando ela distribui lucro.",x:function(){return "ITUB4 é uma ação do Itaú. PETR4, da Petrobras.";}},
+  fii:{t:"Fundo imobiliário (FII)",p:["fundo imobiliário","fundos imobiliários","FII","FIIs"],d:"Um grupo de pessoas junta dinheiro para comprar imóveis (ou dívidas ligadas a imóveis). Você compra cotas e recebe parte dos aluguéis todo mês.",x:function(){return "Códigos de FII terminam em 11: MXRF11, HGLG11, XPML11.";}},
+  etf:{t:"ETF",p:["ETF","ETFs"],d:"Um fundo que copia um índice inteiro. Com um código só você compra dezenas de empresas de uma vez.",x:function(){return "BOVA11 copia as maiores empresas do Brasil. IVVB11 copia as 500 maiores dos EUA.";}},
+  bdr:{t:"BDR",p:["BDR","BDRs"],d:"Um recibo negociado aqui no Brasil que representa uma ação de fora. É o jeito de ter Apple ou Microsoft pelo app brasileiro.",x:function(){return "Códigos terminam em 34 ou 35: AAPL34 (Apple), MSFT34 (Microsoft).";}},
+  aporte:{t:"Aporte",p:["aporte","aportes","aportar","aportando"],d:"Dinheiro novo que você coloca nos investimentos. O segredo é fazer todo mês, mesmo pouco.",x:function(){return n(S.aporte.mensal)?"Seu aporte mensal hoje: "+brl(n(S.aporte.mensal))+".":"";}},
+  reserva:{t:"Reserva de emergência",p:["reserva de emergência","reserva"],d:"Dinheiro guardado só para imprevistos (perder o emprego, doença, conserto). Fica num lugar seguro com saque na hora, separado dos investimentos.",x:function(){var g=n(S.reserva.gasto);return g?"No seu caso: "+brl(g)+" por mês × "+n(S.reserva.meta)+" meses = "+brl(g*n(S.reserva.meta))+".":"O mais comum é guardar de 3 a 6 meses do custo de vida.";}},
+  pm:{t:"Preço médio",p:["preço médio"],d:"Quanto você pagou, em média, por cada cota. O Nubank mostra ao tocar no ativo. Comparando com o preço de hoje, dá para ver se está no lucro ou no prejuízo.",x:function(){return "Comprou 10 cotas a R$ 9 e 10 a R$ 11: preço médio R$ 10.";}},
+  pl:{t:"P/L (preço ÷ lucro)",p:["P/L"],d:"Quantos anos de lucro da empresa equivalem ao preço da ação. P/L 10 = você paga 10 anos de lucro.",x:function(){return "Só faz sentido comparar entre empresas do mesmo setor.";}},
+  pvp:{t:"P/VP",p:["P/VP"],d:"Preço da cota dividido pelo valor do que o fundo tem (os imóveis). Perto de 1 = você paga mais ou menos o que os imóveis valem.",x:function(){return "P/VP 0,9 = paga R$ 90 por R$ 100 de imóveis. Pode ser oportunidade ou sinal de problema: vale entender o porquê.";}},
+  vacancia:{t:"Vacância",p:["vacância"],d:"A parte dos imóveis do fundo que está vazia, sem inquilino. Imóvel vazio não paga aluguel.",x:function(){return "Vacância de 20% = um quinto do fundo não está rendendo.";}},
+  tesouro:{t:"Tesouro Selic",p:["Tesouro Selic","Tesouro Direto","Tesouro"],d:"Você empresta dinheiro para o governo federal e ele paga a taxa Selic. É o investimento mais seguro do país e serve bem para reserva.",x:function(){return "Compra-se pelo app do banco ou corretora a partir de uns R$ 30.";}},
+  cdb:{t:"CDB",p:["CDB","CDBs"],d:"Você empresta dinheiro para um banco e ele paga juros, normalmente uma porcentagem do CDI. Tem garantia do FGC.",x:function(){return "\"CDB a 110% do CDI\" rende 10% a mais que o CDI. A Caixinha do Nubank, por dentro, é um CDB.";}},
+  lci:{t:"LCI e LCA",p:["LCI","LCA","LCI e LCA"],d:"Parecidas com o CDB, mas o dinheiro vai para o setor imobiliário (LCI) ou agrícola (LCA). A vantagem: hoje não pagam imposto de renda.",x:function(){return "Uma LCI a 90% do CDI sem imposto rende mais que um CDB a 100% com imposto.";}},
+  poupanca:{t:"Poupança",p:["poupança"],d:"O investimento mais antigo do Brasil. É seguro, mas rende pouco: hoje, quase metade de uma Caixinha.",x:function(m){return m.cdi?"Poupança: ~"+pct((Math.pow(1.005,12)-1)*100,1)+" ao ano. Caixinha a 100% do CDI: "+pct(m.cdi,1)+".":"";}},
+  jc:{t:"Juros compostos",p:["juros compostos"],d:"Juros sobre juros: o que o dinheiro rende também passa a render. Devagar no começo, rápido depois.",x:function(){return "R$ 300 por mês a 10% ao ano: em 10 anos você coloca R$ 36 mil e tem R$ 60 mil; em 30 anos coloca R$ 108 mil e tem mais de R$ 600 mil.";}},
+  rebal:{t:"Rebalancear",p:["rebalancear","rebalanceamento"],d:"Voltar a carteira para a divisão que você planejou, colocando o dinheiro novo no que ficou para trás.",x:function(){return "É o que a aba Aportar calcula para você.";}},
+  corretora:{t:"Corretora",p:["corretora","corretoras"],d:"A empresa pela qual você compra e vende investimentos. O Nubank, o Mercado Pago e os bancos fazem esse papel.",x:function(){return "Confira se é autorizada pelo Banco Central e pela CVM, e prefira as sem taxa.";}},
+  carteira:{t:"Carteira",p:["carteira"],d:"O conjunto de todos os seus investimentos. \"Diversificar a carteira\" é não deixar tudo num lugar só.",x:function(){var d=analise();return d.T?"A sua carteira hoje: "+brl(d.T)+" em "+carteira().length+" ativo(s).":"";}},
+  volat:{t:"Oscilação (volatilidade)",p:["volatilidade","oscila","oscilação","oscilam"],d:"O sobe e desce do preço. Quanto mais oscila, mais pode render e mais pode cair.",x:function(){return "Ações oscilam muito, fundos imobiliários médio, renda fixa quase nada.";}},
+  divida:{t:"Dívida cara",p:["rotativo","cheque especial","rotativo do cartão"],d:"Rotativo do cartão e cheque especial cobram juros altíssimos, muitas vezes mais de 10% ao mês. Nenhum investimento seguro paga isso.",x:function(){return "R$ 1.000 no rotativo viram uns R$ 3.000 de dívida em um ano. Quitar é o melhor \"investimento\".";}}
+};
+var TERM_RE=(function(){var ps=[];Object.keys(TERMOS).forEach(function(k){TERMOS[k].p.forEach(function(p){ps.push({p:p,k:k});});});ps.sort(function(a,b){return b.p.length-a.p.length;});
+  return {re:new RegExp("(^|[^\\p{L}\\p{N}/])("+ps.map(function(x){return x.p.replace(/[.*+?^${}()|[\]\\\/]/g,"\\$&");}).join("|")+")(?=$|[^\\p{L}\\p{N}/])","giu"),map:ps};})();
+function T(html){ /* marca a primeira ocorrência de cada termo, só fora das tags */
+  var vistos={},partes=String(html).split(/(<[^>]+>)/),dentro=0;
+  return partes.map(function(s){
+    if(s.charAt(0)==="<"){ if(/^<(a|i |button|input|select|label|h1|h2|summary)/i.test(s)) dentro++; else if(/^<\/(a|i|button|input|select|label|h1|h2|summary)/i.test(s)) dentro=Math.max(0,dentro-1); return s; }
+    if(dentro) return s;
+    return s.replace(TERM_RE.re,function(m,pre,w){var k=null,lw=w.toLowerCase();for(var i=0;i<TERM_RE.map.length;i++){if(TERM_RE.map[i].p.toLowerCase()===lw){k=TERM_RE.map[i].k;break;}}
+      if(!k||vistos[k])return m;vistos[k]=1;return pre+'<i class="term" data-t="'+k+'">'+w+'</i>';});
+  }).join("");
+}
+function abrirTermo(k){var t=TERMOS[k];if(!t)return;var ex=t.x?t.x(S.mercado):"";
+  $("#sheet").innerHTML='<div class="grab"></div><div class="pop"><h2>💬 '+t.t+'</h2><p style="margin-top:10px;font-size:17px">'+t.d+'</p>'+(ex?'<div class="ex"><small>Na prática</small>'+ex+'</div>':'')+'<button class="btn full" id="popOk" style="margin-top:16px">Entendi</button></div>';
+  $("#ov").classList.add("on");}
+document.addEventListener("click",function(e){var t=e.target.closest(".term");if(t){e.preventDefault();e.stopPropagation();abrirTermo(t.dataset.t);return;}if(e.target.id==="popOk")fecharFolha();},true);
+
+/* ================= TRILHA ================= */
+function ln(a,b){return '<div class="ln"><span>'+a+'</span><b>'+b+'</b></div>';}
+var ETAPAS=[
+ {t:"Sua jornada começa aqui",h:function(){return "<p>Vamos do zero. Em cada etapa você aprende <b>uma</b> coisa, em uma tela, com os seus números. Nada de texto gigante.</p><p>Toda palavra difícil aparece <i class='term' data-t='cdi'>assim</i>: toque nela e aparece uma explicação de duas linhas. Testa aí.</p><p>Você pode parar quando quiser e voltar depois. O app lembra onde você parou.</p>";}},
+ {t:"Seu dinheiro hoje",h:function(){var g=n(S.reserva.gasto),a=n(S.aporte.mensal);return "<p>Tudo começa com uma pergunta simples: <b>quanto entra e quanto sai por mês?</b> O que sobra é o que dá para investir.</p>"+
+   '<div class="calc">'+ln("Você gasta por mês",brl(g))+ln("Consegue guardar por mês",brl(a))+'</div>'+
+   "<p>Se esses números não estão certos, ajuste em <b>Ajustes → Minha estratégia</b> (gasto) e na aba <b>Aportar</b> (quanto guarda). Não precisa ser exato: aproximado já serve.</p><p>Guardar <b>pouco todo mês</b> vale mais do que guardar muito uma vez só. Você vai ver o porquê na etapa dos juros compostos.</p>";}},
+ {t:"Primeiro: dívidas caras",h:function(){var d=(S.trilha&&S.trilha.divida)||"";return "<p>Antes de investir um real, uma pergunta: <b>você deve no rotativo do cartão ou no cheque especial?</b></p>"+
+   '<div class="opt2"><button data-div="sim" class="'+(d==="sim"?"sel":"")+'">Sim, devo</button><button data-div="nao" class="'+(d==="nao"?"sel":"")+'">Não devo</button></div>'+
+   (d==="sim"?"<p><b>Então sua primeira meta é quitar isso.</b> Essas dívidas cobram mais de 10% ao mês. Nenhum investimento seguro rende nem perto disso: pagar a dívida é o melhor \"investimento\" que existe. Se der, troque por um empréstimo mais barato e vá quitando.</p>":
+    d==="nao"?"<p><b>Ótimo.</b> Você já pulou a armadilha mais comum. Pode seguir para a reserva.</p>":"<p>Responda acima para continuar.</p>");}},
+ {t:"A reserva de emergência",h:function(){var d=analise(),g=n(S.reserva.gasto),mt=n(S.reserva.meta);return "<p>Imagina perder a renda por uns meses, ou um conserto caro aparecer. A <b>reserva de emergência</b> é o dinheiro que te segura nessas horas, sem precisar pegar empréstimo nem vender investimento na pior hora.</p>"+
+   '<div class="calc">'+ln("Seu custo de vida por mês",brl(g))+ln("Meta: "+mt+" meses guardados",brl(g*mt))+ln("Você já tem",brl(d.rs))+ln("Falta",brl(d.faltaRes))+'</div>'+
+   "<p>Ela fica num lugar <b>seguro</b>, que <b>rende</b> e de onde dá para <b>sacar na hora</b>. Nunca em ações. A próxima etapa mostra onde.</p>";}},
+ {t:"Onde a reserva rende",h:function(){var m=S.mercado;return "<p>Dinheiro parado na conta não rende nada e a inflação vai comendo. Guardado numa <b>Caixinha</b>, no <b>Mercado Pago</b> ou no <b>Tesouro Selic</b>, ele rende todo dia, mais ou menos o <b>CDI</b>.</p>"+
+   (m.cdi?'<div class="calc">'+ln("CDI hoje",pct(m.cdi,2)+" ao ano")+ln("R$ 10.000 rendem por mês (antes do imposto)",brl(10000*(Math.pow(1+m.cdi/100,1/12)-1)))+ln("Na poupança",brl(10000*0.005))+ln("Parado na conta","R$ 0")+'</div>':'')+
+   "<p>Entre Caixinha, Mercado Pago e Tesouro Selic a diferença é pequena: todos têm garantia e saque rápido. O que importa é <b>sair da poupança e da conta parada</b>. Em <b>Aprender → Onde guardar</b> você compara com as taxas que os seus apps mostram.</p>";}},
+ {t:"Imposto de renda, sem susto",h:function(){var m=S.mercado,v=Math.max(reservaSaldo(),10000),r=m.cdi?v*m.cdi/100:1000;return "<p>Na renda fixa, o governo fica com uma parte <b>só do rendimento</b>, nunca do que você colocou. E é descontado sozinho na hora do saque: você não precisa fazer nada.</p>"+
+   '<div class="calc">'+ln("Se "+brl(v)+" renderem em 1 ano",brl(r))+ln("Imposto (20%, até 1 ano)",brl(r*0.2))+ln("Sobra para você",brl(r*0.8))+'</div>'+
+   "<p>Quanto mais tempo você deixa, menos paga: começa em 22,5% e cai até 15% depois de 2 anos. Fundos imobiliários pagam rendimento mensal <b>sem imposto</b> para pessoa física, dentro de regras. LCI e LCA também são isentas.</p><p>Resumo: o imposto não é um bicho. É só lembrar de comparar o rendimento <b>líquido</b>, que é o que sobra.</p>";}},
+ {t:"Inflação: o inimigo invisível",h:function(){var m=S.mercado,real=(m.cdi&&m.ipca)?((1+m.cdi/100)/(1+m.ipca/100)-1)*100:null;return "<p>Todo ano os preços sobem. Isso é a <b>inflação</b>. Se seu dinheiro rende menos do que ela, você está <b>perdendo</b>, mesmo vendo o saldo crescer.</p>"+
+   (m.ipca?'<div class="calc">'+ln("Preços subiram em 12 meses",pct(m.ipca,2))+ln("Renda fixa a 100% do CDI rendeu",pct(m.cdi,2))+ln("Ganho de verdade (acima dos preços)",pct(real,1))+'</div>':'')+
+   "<p>O número que importa é o <b>ganho real</b>: o que sobra acima da inflação. Hoje a renda fixa ganha bem dela. Nem sempre foi assim, e por isso existe a renda variável, que você vai ver daqui a pouco.</p>";}},
+ {t:"Seu primeiro investimento",h:function(){return "<p>Com a reserva encaminhada, o próximo passo é simples e seguro: <b>renda fixa</b>.</p><p>Funciona assim: você empresta dinheiro e recebe com juros. Para o governo, é o <b>Tesouro Direto</b>. Para um banco, é o <b>CDB</b>, a <b>LCI</b> ou a <b>LCA</b>.</p>"+
+   "<p>Como escolher? Três perguntas:</p><ul><li><b>Quanto rende, já sem imposto?</b> (Ajustes → Comparar ofertas faz a conta)</li><li><b>Quando posso sacar?</b> Dinheiro para logo precisa de liquidez diária.</li><li><b>Tem garantia?</b> FGC ou governo.</li></ul><p>Fez o primeiro? Cadastre na aba <b>Carteira</b> e o app passa a acompanhar.</p>";}},
+ {t:"Renda variável: o sobe e desce",h:function(){return "<p>Agora a parte que mais assusta e mais rende no longo prazo: a <b>renda variável</b>.</p><p><b>Ação</b> é um pedacinho de uma empresa. <b>Fundo imobiliário</b> é um pedacinho de um conjunto de imóveis que paga aluguel todo mês. <b>ETF</b> é um pacote com dezenas de empresas num código só.</p>"+
+   "<p>O preço muda todo dia porque milhões de pessoas compram e vendem. Cair 10% num mês é <b>normal</b>. Por isso duas regras:</p><ul><li>Só dinheiro que pode ficar <b>anos</b> parado.</li><li>Nunca tudo num ativo só.</li></ul><p>Na <b>Lupa</b> (aba Aprender) você digita um código, como MXRF11, e vê o que ele é e os números de hoje, explicados.</p>";}},
+ {t:"Quanto em cada tipo",h:function(){var p=PRAZOS.filter(function(x){return x.id===S.prazo;})[0];return "<p>Não existe divisão perfeita. Existe a que combina com <b>quando você vai precisar do dinheiro</b>: quanto mais longe, mais renda variável dá para ter.</p>"+
+   '<div class="calc">'+(p?ln("Você escolheu",p.t):'')+CLASSES.filter(function(c){return n(S.alvos[c.k])>0;}).map(function(c){return ln('<span class="dot" style="background:'+c.cor+';margin-right:6px"></span>'+c.nome,pct(n(S.alvos[c.k])));}).join("")+'</div>'+
+   "<p>Essa é a sua <b>meta</b>. O app compara a sua carteira com ela e, na aba <b>Aportar</b>, diz onde colocar o dinheiro novo para ir se aproximando, sem vender nada. Dá para mudar em Ajustes → Minha estratégia.</p>";}},
+ {t:"O poder de investir todo mês",h:function(){var m=S.mercado,a=n(S.aporte.mensal)||300,tx=n(m.cdi)||10,i=Math.pow(1+tx/100,1/12)-1;function f(anos){var s=0;for(var k=0;k<anos*12;k++)s=s*(1+i)+a;return s;}
+   return "<p>Aqui está o truque que faz tudo funcionar: <b>juros compostos</b>. O que rende passa a render também. Veja com o seu aporte de "+brl(a)+" por mês, à taxa de hoje:</p>"+
+   '<div class="calc">'+ln("Em 1 ano",brl(f(1))+' <span class="mut small">(você colocou '+brl(a*12)+')</span>')+ln("Em 5 anos",brl(f(5))+' <span class="mut small">('+brl(a*60)+')</span>')+ln("Em 10 anos",brl(f(10))+' <span class="mut small">('+brl(a*120)+')</span>')+ln("Em 20 anos",brl(f(20))+' <span class="mut small">('+brl(a*240)+')</span>')+'</div>'+
+   "<p>Repare: em 20 anos, mais da metade do dinheiro é <b>rendimento</b>, não o que você guardou. Em <b>Aprender → Simular</b> você brinca com outros valores.</p>";}},
+ {t:"Quando vender (e quando não)",h:function(){return "<p>A pergunta que todo mundo faz: <b>\"caiu, eu vendo?\"</b> Na maioria das vezes, não. Cair faz parte. Quem vende no susto transforma uma queda passageira em perda de verdade.</p><p>Vende-se por <b>motivo planejado</b>:</p><ul><li>Chegou o objetivo (era para a viagem, a viagem chegou).</li><li>Um ativo cresceu demais e passou do seu limite: o app avisa.</li><li>O motivo da compra mudou de verdade (o fundo parou de pagar, a empresa quebrou), não só o preço.</li></ul><p>E nunca precisa vender por emergência, porque… a reserva existe para isso.</p>";}},
+ {t:"Pronto. Agora é dia a dia",h:function(){return "<p>Você passou pelo básico que a maioria das pessoas nunca aprende. O resto é prática:</p><ul><li><b>Início</b>: o que fazer agora e o mercado do dia.</li><li><b>Carteira</b>: cadastre cada compra; o app acompanha o preço.</li><li><b>Aportar</b>: todo mês, onde colocar o dinheiro novo.</li><li><b>Aprender</b>: lições, Lupa, simulador e onde guardar.</li></ul><p>Pode refazer qualquer etapa pelo mapa no Início. E pode tocar em qualquer palavra sublinhada, em qualquer tela, quando bater a dúvida.</p>";}}
+];
+var tr=0;
+function trilhaOk(i){return !!(S.trilha&&S.trilha.ok&&S.trilha.ok[i]);}
+function abrirTrilha(i){S.trilha=S.trilha||{ok:{}};tr=Math.max(0,Math.min(i,ETAPAS.length-1));S.trilha.atual=tr;save();pintarTrilha();$("#trilha").classList.add("on");$("#trilha").scrollTo(0,0);}
+function pintarTrilha(){var e=ETAPAS[tr],bloq=(tr===2&&!(S.trilha.divida));
+  $("#trBar").style.width=((tr+1)/ETAPAS.length*100)+"%";$("#trPos").textContent=(tr+1)+"/"+ETAPAS.length;
+  $("#trBody").innerHTML='<div class="tr-n">Etapa '+(tr+1)+' de '+ETAPAS.length+'</div><h1>'+e.t+'</h1><div class="texto">'+T(e.h())+'</div>'+
+    '<div class="tr-foot">'+(tr>0?'<button class="btn ghost" id="trAnt">Anterior</button>':'')+'<button class="btn" style="flex:1" id="trProx" '+(bloq?'disabled':'')+'>'+(tr===ETAPAS.length-1?"Concluir":"Entendi, próxima")+'</button></div>';}
+$("#trilha").addEventListener("click",function(e){
+  if(e.target.closest("#trSair")){$("#trilha").classList.remove("on");renderInicio();return;}
+  if(e.target.closest("#trAnt")){tr--;S.trilha.atual=tr;save();pintarTrilha();$("#trilha").scrollTo(0,0);return;}
+  if(e.target.closest("#trProx")){S.trilha.ok[tr]=1;if(tr<ETAPAS.length-1){tr++;S.trilha.atual=tr;save();pintarTrilha();$("#trilha").scrollTo(0,0);}else{save();$("#trilha").classList.remove("on");renderInicio();toast("Jornada concluída 🎉");}return;}
+  var d=e.target.closest("[data-div]");if(d){S.trilha.divida=d.dataset.div;save();pintarTrilha();}
+});
+function renderJornada(){S.trilha=S.trilha||{ok:{}};var feitas=ETAPAS.filter(function(_,i){return trilhaOk(i);}).length,prox=0;while(prox<ETAPAS.length&&trilhaOk(prox))prox++;
+  var fim=feitas>=ETAPAS.length;
+  $("#pJornada").innerHTML='<div class="jor"><div class="n">'+(fim?"✓":(prox+1))+'</div><div style="flex:1"><p class="small mut">Sua jornada · '+feitas+' de '+ETAPAS.length+' etapas</p><h2>'+(fim?"Jornada completa":ETAPAS[Math.min(prox,ETAPAS.length-1)].t)+'</h2></div></div>'+
+    '<div class="prog"><i style="width:'+(feitas/ETAPAS.length*100)+'%"></i></div>'+
+    '<div class="mapa">'+ETAPAS.map(function(e,i){return '<i class="'+(trilhaOk(i)?"ok":"")+(i===prox&&!fim?" at":"")+'" data-tr="'+i+'" title="'+esc(e.t)+'">'+(i+1)+'</i>';}).join("")+'</div>'+
+    '<button class="btn full" id="trIr" style="margin-top:14px">'+(fim?"Rever a jornada":feitas?"Continuar":"Começar do zero")+'</button>';
+  $("#pJornada").onclick=function(e){var m=e.target.closest("[data-tr]");if(m){abrirTrilha(+m.dataset.tr);return;}if(e.target.closest("#trIr"))abrirTrilha(fim?0:prox);};}
 
 /* ================= NAVEGAÇÃO E EVENTOS ================= */
 var TIT={inicio:"Início",carteira:"Carteira",aportar:"Aportar",aprender:"Aprender",ajustes:"Ajustes"};
